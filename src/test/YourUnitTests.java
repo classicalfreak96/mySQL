@@ -43,7 +43,8 @@ public class YourUnitTests {
 	}
 	
 	@Test
-	public void test() {
+	public void testTupleDescHashCode() {
+		
 		fail("Not yet implemented");
 	}
 

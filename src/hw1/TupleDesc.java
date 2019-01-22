@@ -24,15 +24,15 @@ public class TupleDesc {
      * @param fieldAr array specifying the names of the fields. Note that names may be null.
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
-    	//your code here
+    		this.types = typeAr;
+    		this.fields = fieldAr;
     }
 
     /**
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {
-        //your code here
-    	return 0;
+    		return this.fields.length;
     }
 
     /**
@@ -43,8 +43,10 @@ public class TupleDesc {
      * @throws NoSuchElementException if i is not a valid field reference.
      */
     public String getFieldName(int i) throws NoSuchElementException {
-        //your code here
-    	return null;
+        if (i >= this.fields.length) {
+        		throw new NoSuchElementException();
+        }
+        return this.fields[i];
     }
 
     /**
@@ -55,8 +57,12 @@ public class TupleDesc {
      * @throws NoSuchElementException if no field with a matching name is found.
      */
     public int nameToId(String name) throws NoSuchElementException {
-        //your code here
-    	return 0;
+        for(int i = 0; i < this.fields.length; i++) {
+        		if(this.fields[i] == name) {
+        			return i;
+        		}
+        }
+        throw new NoSuchElementException();
     }
 
     /**
@@ -67,8 +73,10 @@ public class TupleDesc {
      * @throws NoSuchElementException if i is not a valid field reference.
      */
     public Type getType(int i) throws NoSuchElementException {
-        //your code here
-    	return null;
+    		if(i >= this.types.length) {
+    			throw new NoSuchElementException();
+    		}
+    		return this.types[i];
     }
 
     /**
