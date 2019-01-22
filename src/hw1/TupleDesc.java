@@ -6,7 +6,13 @@ import java.util.*;
  */
 public class TupleDesc {
 
-	private Type[] types;
+	//ints are 4 bytes, as java implements it
+	//strings can vary in length- use datatype more related to char in sql 
+		//-we'll put an upper bound on the length that a string can be
+		//-cap/bound for number of characters that a string can have 
+		//-byte in front that tells us the length of the string 
+		//all strings 129 bytes long 
+	private Type[] types; //2 data types: integers and strings. using fixed length records 
 	private String[] fields;
 	
     /**
