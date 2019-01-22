@@ -11,17 +11,23 @@ import java.util.HashMap;
  */
 public class Tuple {
 	
+	private int pid;
+	private int id;
+	private TupleDesc td;
+	
 	/**
 	 * Creates a new tuple with the given description
 	 * @param t the schema for this tuple
 	 */
+	
 	public Tuple(TupleDesc t) {
 		//your code here
+		this.td = t;
 	}
 	
 	public TupleDesc getDesc() {
 		//your code here
-		return null;
+		return td;
 	}
 	
 	/**
@@ -30,10 +36,11 @@ public class Tuple {
 	 */
 	public int getPid() {
 		//your code here
-		return 0;
+		return pid;
 	}
 
 	public void setPid(int pid) {
+		this.pid = pid;
 		//your code here
 	}
 
@@ -43,15 +50,16 @@ public class Tuple {
 	 */
 	public int getId() {
 		//your code here
-		return 0;
+		return id;
 	}
 
 	public void setId(int id) {
 		//your code here
+		this.id = id;
 	}
 	
 	public void setDesc(TupleDesc td) {
-		//your code here;
+		this.td = td;
 	}
 	
 	/**
