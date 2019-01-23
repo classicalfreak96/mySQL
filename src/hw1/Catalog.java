@@ -16,12 +16,13 @@ import java.util.*;
 
 public class Catalog {
 	
+	private LinkedList<TableSchema> tables;
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
-    	//your code here
+    		this.tables = new LinkedList<TableSchema>();
     }
 
     /**
@@ -33,7 +34,8 @@ public class Catalog {
      * @param pkeyField the name of the primary key field
      */
     public void addTable(HeapFile file, String name, String pkeyField) {
-    	//your code here
+    		// need to check for naming conflicts
+    		this.tables.add(new TableSchema(name, file, pkeyField));
     }
 
     public void addTable(HeapFile file, String name) {
@@ -44,9 +46,15 @@ public class Catalog {
      * Return the id of the table with a specified name,
      * @throws NoSuchElementException if the table doesn't exist
      */
-    public int getTableId(String name) {
-    	//your code here
-    	return 0;
+    public int getTableId(String name) throws NoSuchElementException {
+    		// not sure if this is right (is HeapFile's getId method the same as the table's id?)
+    		for(int i = 0; i < this.tables.size(); i++) {
+    			TableSchema ts = this.tables.get(i);
+    			if (ts.name.equals(name)) {
+    				return ts.location.getId();
+    			}
+    		}
+    		throw new NoSuchElementException();
     }
 
     /**
@@ -55,8 +63,13 @@ public class Catalog {
      *     function passed to addTable
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
-    	//your code here
-    	return null;
+    		for(int i = 0; i < this.tables.size(); i++) {
+			TableSchema ts = this.tables.get(i);
+			if (ts.location.getId() == tableid) {
+				return ts.location.getTupleDesc();
+			}
+		}
+    		throw new NoSuchElementException();
     }
 
     /**
@@ -66,18 +79,29 @@ public class Catalog {
      *     function passed to addTable
      */
     public HeapFile getDbFile(int tableid) throws NoSuchElementException {
-    	//your code here
-    	return null;
+    		for(int i = 0; i < this.tables.size(); i++) {
+			TableSchema ts = this.tables.get(i);
+			if (ts.location.getId() == tableid) {
+				return ts.location;
+			}
+		}
+    		throw new NoSuchElementException();
     }
 
     /** Delete all tables from the catalog */
     public void clear() {
-    	//your code here
+    		this.tables = new LinkedList<TableSchema>();
     }
-
-    public String getPrimaryKey(int tableid) {
-    	//your code here
-    	return null;
+    
+    // not sure if throwing an exception here is necessary
+    public String getPrimaryKey(int tableid) throws NoSuchElementException{
+    		for(int i = 0; i < this.tables.size(); i++) {
+			TableSchema ts = this.tables.get(i);
+			if (ts.location.getId() == tableid) {
+				return ts.pk;
+			}
+		}
+    		throw new NoSuchElementException();
     }
 
     public Iterator<Integer> tableIdIterator() {
@@ -142,6 +166,20 @@ public class Catalog {
             System.out.println ("Invalid catalog entry : " + line);
             System.exit(0);
         }
+    }
+    
+    // Private inner class
+    // a table's metadata
+    private class TableSchema {
+    		private String name;
+    		private HeapFile location;
+    		private String pk;
+    		
+    		public TableSchema(String name, HeapFile location, String pk) {
+    			this.name = name;
+    			this.location = location;
+    			this.pk = pk;	
+    		}
     }
 }
 
