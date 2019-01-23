@@ -32,7 +32,7 @@ public class TupleDesc {
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {
-    		return this.fields.length;
+    		return this.types.length;
     }
 
     /**
@@ -84,8 +84,19 @@ public class TupleDesc {
      * Note that tuples from a given TupleDesc are of a fixed size.
      */
     public int getSize() {
-    	//your code here
-    	return 0;
+    	int size = 0;
+    	for (int i = 0; i < this.types.length; i++) {
+    		if (types[i] == Type.INT) {
+    			size += 4;
+    		}
+    		else if (types[i] == Type.STRING) {
+    			size += 129;
+    		}
+    		else {
+    			size += 0;
+    		}
+    	}
+    	return size;
     }
 
     /**
@@ -97,7 +108,22 @@ public class TupleDesc {
      * @return true if the object is equal to this TupleDesc.
      */
     public boolean equals(Object o) {
-    	//your code here
+    	if (o instanceof TupleDesc) {
+    		TupleDesc toCompare = (TupleDesc) o;
+    		if (toCompare.getSize() == this.getSize()) {
+    			System.out.println("sizes equal");
+    			for(int i = 0; i < this.types.length; i++) {
+    				System.out.println("compared!");
+    				if(this.types[i] != toCompare.types[i]) {
+    					System.out.println("types differ");
+    					return false;
+    				}
+    			}
+    			System.out.println("---------------------");
+    			return true;
+    		}
+    	}
+		System.out.println("not instance of");
     	return false;
     }
     
@@ -115,7 +141,10 @@ public class TupleDesc {
      * @return String describing this descriptor.
      */
     public String toString() {
-        //your code here
-    	return "";
+        String s = "";
+        for(int i = 0; i < this.types.length; i++) {
+        	s += this.types[i] + "(" + this.fields[i] + "), ";
+        }
+    	return s;
     }
 }

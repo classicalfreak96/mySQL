@@ -14,6 +14,7 @@ public class Tuple {
 	private int pid;
 	private int id;
 	private TupleDesc td;
+//	private ;
 	
 	/**
 	 * Creates a new tuple with the given description
