@@ -111,19 +111,14 @@ public class TupleDesc {
     	if (o instanceof TupleDesc) {
     		TupleDesc toCompare = (TupleDesc) o;
     		if (toCompare.getSize() == this.getSize()) {
-    			System.out.println("sizes equal");
     			for(int i = 0; i < this.types.length; i++) {
-    				System.out.println("compared!");
     				if(this.types[i] != toCompare.types[i]) {
-    					System.out.println("types differ");
     					return false;
     				}
     			}
-    			System.out.println("---------------------");
     			return true;
     		}
     	}
-		System.out.println("not instance of");
     	return false;
     }
     
@@ -143,8 +138,11 @@ public class TupleDesc {
     public String toString() {
         String s = "";
         for(int i = 0; i < this.types.length; i++) {
-        	s += this.types[i] + "(" + this.fields[i] + "), ";
+        	s += this.types[i] + "(" + (String) this.fields[i] + ")";
+        	if (i != this.types.length - 1) {
+        		s += ", ";
+        	}
         }
-    	return s;
+    	return (String) s;
     }
 }
