@@ -15,6 +15,7 @@ import hw1.Database;
 import hw1.HeapFile;
 import hw1.HeapPage;
 import hw1.TupleDesc;
+import hw1.Type;
 
 public class YourUnitTests {
 	
@@ -44,11 +45,15 @@ public class YourUnitTests {
 	
 	@Test
 	public void testTupleDescHashCode() {
+		TupleDesc td1 = new TupleDesc(new Type[]{Type.INT}, new String[]{""});
+		TupleDesc td2 = new TupleDesc(new Type[]{Type.INT}, new String[]{""});
+		TupleDesc td3 = new TupleDesc(new Type[]{Type.INT, Type.STRING}, new String[]{"", ""});
 		
-		fail("Not yet implemented");
+		assertTrue(td1.hashCode() == td2.hashCode());
+		assertFalse(td1.hashCode() == td3.hashCode());
 	}
 	
-	//HARRISON'S FUNCTION DO NOT TOUCH DAVID OKAY?
+	//HARRISON'S FUNCTION DO NOT TOUCH DAVID OKAY? okey
 	
 	public void testSomethingElse(){
 		
