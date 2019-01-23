@@ -17,6 +17,8 @@ import java.util.Iterator;
 public class HeapFile {
 	
 	public static final int PAGE_SIZE = 4096;
+	private File file;
+	private TupleDesc type;
 	
 	/**
 	 * Creates a new heap file in the given location that can accept tuples of the given type
@@ -24,17 +26,16 @@ public class HeapFile {
 	 * @param types type of tuples contained in the file
 	 */
 	public HeapFile(File f, TupleDesc type) {
-		//your code here
+		this.file = f;
+		this.type = type;
 	}
 	
 	public File getFile() {
-		//your code here
-		return null;
+		return this.file;
 	}
 	
 	public TupleDesc getTupleDesc() {
-		//your code here
-		return null;
+		return this.type;
 	}
 	
 	/**
@@ -55,8 +56,7 @@ public class HeapFile {
 	 * @return
 	 */
 	public int getId() {
-		//your code here
-		return -1;
+		return this.file.hashCode();
 	}
 	
 	/**

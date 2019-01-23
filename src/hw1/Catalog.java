@@ -103,15 +103,22 @@ public class Catalog {
 		}
     		throw new NoSuchElementException();
     }
-
+    
+    // does this mean we need a separate list just for table id's?
     public Iterator<Integer> tableIdIterator() {
-    	//your code here
-    	return null;
+    		// return this.tables.iterator()
+    		return null;
     }
-
-    public String getTableName(int id) {
-    	//your code here
-    	return null;
+    
+    // are we allowed to throw an exception if the id does not exist?
+    public String getTableName(int id) throws NoSuchElementException {
+    		for(int i = 0; i < this.tables.size(); i++) {
+			TableSchema ts = this.tables.get(i);
+			if (ts.location.getId() == id) {
+				return ts.name;
+			}
+		}
+    		throw new NoSuchElementException();
     }
     
     /**
