@@ -27,7 +27,7 @@ public class HeapPage {
 		this.td = Database.getCatalog().getTupleDesc(this.tableId);
 		this.numSlots = getNumSlots();
 		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
-
+		
 		// allocate and read the header slots of this page
 		header = new byte[getHeaderSize()];
 		for (int i=0; i<header.length; i++)
@@ -45,8 +45,7 @@ public class HeapPage {
 	}
 
 	public int getId() {
-		//your code here
-		return 0;
+		return this.id;
 	}
 
 	/**
