@@ -47,5 +47,12 @@ public class YourUnitTests {
 		
 		fail("Not yet implemented");
 	}
+	
+	//HARRISON'S FUNCTION DO NOT TOUCH DAVID OKAY?
+	
+	public void testSomethingElse(){
+		
+		fail("i hate this class");
+	}
 
 }
