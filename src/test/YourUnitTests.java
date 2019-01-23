@@ -49,8 +49,12 @@ public class YourUnitTests {
 		TupleDesc td2 = new TupleDesc(new Type[]{Type.INT}, new String[]{""});
 		TupleDesc td3 = new TupleDesc(new Type[]{Type.INT, Type.STRING}, new String[]{"", ""});
 		
+		assertTrue(td1.hashCode() == td1.hashCode());
 		assertTrue(td1.hashCode() == td2.hashCode());
+		assertTrue(td3.hashCode() == td3.hashCode());
+		
 		assertFalse(td1.hashCode() == td3.hashCode());
+		assertFalse(td2.hashCode() == td3.hashCode());
 	}
 		
 	public void testSomethingElse(){
