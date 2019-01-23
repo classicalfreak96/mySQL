@@ -14,7 +14,7 @@ public class Tuple {
 	private int pid;
 	private int id;
 	private TupleDesc td;
-//	private ;
+	private Field[] dataArray;
 	
 	/**
 	 * Creates a new tuple with the given description
@@ -24,6 +24,7 @@ public class Tuple {
 	public Tuple(TupleDesc t) {
 		//your code here
 		this.td = t;
+		dataArray = new Field[this.td.numFields()];
 	}
 	
 	public TupleDesc getDesc() {
@@ -69,12 +70,12 @@ public class Tuple {
 	 * @param v the data
 	 */
 	public void setField(int i, Field v) {
-		//your code here
+		this.dataArray[i] = v;
 	}
 	
 	public Field getField(int i) {
 		//your code here
-		return null;
+		return this.dataArray[i];
 	}
 	
 	/**
@@ -84,6 +85,7 @@ public class Tuple {
 	 */
 	public String toString() {
 		//your code here
+		//TODO
 		return "";
 	}
 }

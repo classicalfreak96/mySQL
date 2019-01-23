@@ -62,9 +62,8 @@ public class YourUnitTests {
 		assertFalse(td3.hashCode() == td4.hashCode());
 	}
 		
-	public void testSomethingElse(){
-		
-		fail("i hate this class");
+	public void correctType(){
+//		Tuple
 	}
 
 }
