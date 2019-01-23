@@ -62,9 +62,13 @@ public class HeapPage {
 	 * Computes the size of the header. Headers must be a whole number of bytes (no partial bytes)
 	 * @return size of header in bytes
 	 */
-	private int getHeaderSize() {        
-		//your code here
-		return 0;
+	private int getHeaderSize() {
+		// this can't be right
+		int size = 0;
+		for(int i = 0; i < this.tuples.length; i++) {
+			size += this.tuples[i].getDesc().getSize();
+		}
+		return size;
 	}
 
 	/**

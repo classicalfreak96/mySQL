@@ -16,13 +16,13 @@ import java.util.*;
 
 public class Catalog {
 	
-	private LinkedList<TableSchema> tables;
+	private ArrayList<TableSchema> tables;
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
-    		this.tables = new LinkedList<TableSchema>();
+    		this.tables = new ArrayList<TableSchema>();
     }
 
     /**
@@ -35,6 +35,13 @@ public class Catalog {
      */
     public void addTable(HeapFile file, String name, String pkeyField) {
     		// need to check for naming conflicts
+    		for(int i = 0; i < this.tables.size(); i++) {
+    			TableSchema ts = this.tables.get(i);
+    			if (ts.name == name) {
+    				this.tables.remove(i);
+    				break;
+    			}
+    		}
     		this.tables.add(new TableSchema(name, file, pkeyField));
     }
 
@@ -90,7 +97,7 @@ public class Catalog {
 
     /** Delete all tables from the catalog */
     public void clear() {
-    		this.tables = new LinkedList<TableSchema>();
+    		this.tables = new ArrayList<TableSchema>();
     }
     
     // not sure if throwing an exception here is necessary
