@@ -52,9 +52,7 @@ public class YourUnitTests {
 		assertTrue(td1.hashCode() == td2.hashCode());
 		assertFalse(td1.hashCode() == td3.hashCode());
 	}
-	
-	//HARRISON'S FUNCTION DO NOT TOUCH DAVID OKAY? okey
-	
+		
 	public void testSomethingElse(){
 		
 		fail("i hate this class");
