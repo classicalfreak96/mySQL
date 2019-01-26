@@ -16,13 +16,14 @@ import java.util.*;
 
 public class Catalog {
 	
-	private ArrayList<TableSchema> tables;
+//	private ArrayList<TableSchema> tables;
+	private HashMap<Integer, TableSchema> tables;
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
-    		this.tables = new ArrayList<TableSchema>();
+    		this.tables = new HashMap<Integer, TableSchema>();
     }
 
     /**
@@ -35,16 +36,20 @@ public class Catalog {
      */
     public void addTable(HeapFile file, String name, String pkeyField) {
     		// need to check for naming conflicts
-    		for(int i = 0; i < this.tables.size(); i++) {
-    			TableSchema ts = this.tables.get(i);
+    		Object[] keys = tables.keySet().toArray();
+    		for(int i = 0; i < keys.length; i++) {
+    			Object keyID = keys[i];
+    			TableSchema ts = this.tables.get(keyID);
     			if (ts.name == name) {
-    				this.tables.remove(i);
+    				this.tables.remove(keyID);
     				break;
     			}
     		}
-    		this.tables.add(new TableSchema(name, file, pkeyField));
+    		this.tables.put(file.getId(), new TableSchema(name, file, pkeyField));
+//    		this.tables.add(new TableSchema(name, file, pkeyField));
     }
 
+    //what is the purpose of this function?
     public void addTable(HeapFile file, String name) {
         addTable(file,name,"");
     }
@@ -55,10 +60,11 @@ public class Catalog {
      */
     public int getTableId(String name) throws NoSuchElementException {
     		// not sure if this is right (is HeapFile's getId method the same as the table's id?)
-    		for(int i = 0; i < this.tables.size(); i++) {
-    			TableSchema ts = this.tables.get(i);
+    		Object[] keys = tables.keySet().toArray();
+    		for (int i = 0; i < keys.length; i++) {
+    			TableSchema ts = this.tables.get(keys[i]);
     			if (ts.name.equals(name)) {
-    				return ts.location.getId();
+    				return ts.heapfile.getId();
     			}
     		}
     		throw new NoSuchElementException();
@@ -70,13 +76,12 @@ public class Catalog {
      *     function passed to addTable
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
-    		for(int i = 0; i < this.tables.size(); i++) {
-			TableSchema ts = this.tables.get(i);
-			if (ts.location.getId() == tableid) {
-				return ts.location.getTupleDesc();
-			}
-		}
+    	try {
+    		return tables.get(tableid).getDesc();
+    	}
+    	catch (Exception e) {
     		throw new NoSuchElementException();
+    	}
     }
 
     /**
@@ -86,46 +91,42 @@ public class Catalog {
      *     function passed to addTable
      */
     public HeapFile getDbFile(int tableid) throws NoSuchElementException {
-    		for(int i = 0; i < this.tables.size(); i++) {
-			TableSchema ts = this.tables.get(i);
-			if (ts.location.getId() == tableid) {
-				return ts.location;
-			}
-		}
+    	try {
+    		return tables.get(tableid).getHeapFile();
+    	}
+    	catch (Exception e){
     		throw new NoSuchElementException();
+    	}
     }
 
     /** Delete all tables from the catalog */
     public void clear() {
-    		this.tables = new ArrayList<TableSchema>();
+    		this.tables = new HashMap<Integer, TableSchema>();
     }
     
     // not sure if throwing an exception here is necessary
     public String getPrimaryKey(int tableid) throws NoSuchElementException{
-    		for(int i = 0; i < this.tables.size(); i++) {
-			TableSchema ts = this.tables.get(i);
-			if (ts.location.getId() == tableid) {
-				return ts.pk;
-			}
-		}
+    	try {
+    		return tables.get(tableid).pk;
+    	}
+    	catch (Exception e) {
     		throw new NoSuchElementException();
+    	}
     }
     
     // does this mean we need a separate list just for table id's?
     public Iterator<Integer> tableIdIterator() {
-    		// return this.tables.iterator()
-    		return null;
+    		return this.tables.keySet().iterator();
     }
     
     // are we allowed to throw an exception if the id does not exist?
     public String getTableName(int id) throws NoSuchElementException {
-    		for(int i = 0; i < this.tables.size(); i++) {
-			TableSchema ts = this.tables.get(i);
-			if (ts.location.getId() == id) {
-				return ts.name;
-			}
-		}
+    	try {
+    		return tables.get(id).name;
+    	}
+    	catch (Exception e) {
     		throw new NoSuchElementException();
+    	}
     }
     
     /**
@@ -186,13 +187,23 @@ public class Catalog {
     // a table's metadata
     private class TableSchema {
     		private String name;
-    		private HeapFile location;
+    		private HeapFile heapfile;
     		private String pk;
+    		private int tableID;
     		
-    		public TableSchema(String name, HeapFile location, String pk) {
+    		public TableSchema(String name, HeapFile heapfile, String pk) {
     			this.name = name;
-    			this.location = location;
+    			this.heapfile = heapfile;
     			this.pk = pk;	
+    			this.tableID = this.heapfile.getId();
+    		}
+    		
+    		public HeapFile getHeapFile() {
+    			return this.heapfile;
+    		}
+    		
+    		public TupleDesc getDesc() {
+    			return heapfile.getTupleDesc();
     		}
     }
 }
