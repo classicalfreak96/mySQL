@@ -72,8 +72,9 @@ public class HeapPage {
 	 * @return true if occupied
 	 */
 	public boolean slotOccupied(int s) {
-		//your code here
-		return false;
+		byte currentByte = header[(int)s/8];
+		int currentBit = (currentByte >> (s % 8) & 1);
+		return currentBit > 0 ? true : false;
 	}
 
 	/**
