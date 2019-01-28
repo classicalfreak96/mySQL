@@ -54,8 +54,8 @@ public class HeapPage {
 	 * @return number of slots on this page
 	 */
 	public int getNumSlots() {
-		//your code here
-		return 0;
+		double numSlots = (8 * HeapFile.PAGE_SIZE) / ((td.getSize() * 8 ) + 1);
+		return (int) Math.floor(numSlots);
 	}
 
 	/**
@@ -63,12 +63,7 @@ public class HeapPage {
 	 * @return size of header in bytes
 	 */
 	private int getHeaderSize() {
-		// this can't be right
-		int size = 0;
-		for(int i = 0; i < this.tuples.length; i++) {
-			size += this.tuples[i].getDesc().getSize();
-		}
-		return size;
+		return (int) Math.ceil(this.getNumSlots() / 8.0);
 	}
 
 	/**
