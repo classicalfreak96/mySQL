@@ -6,7 +6,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 
@@ -54,7 +56,7 @@ public class HeapPage {
 	 * @return number of slots on this page
 	 */
 	public int getNumSlots() {
-		double numSlots = (8 * HeapFile.PAGE_SIZE) / ((td.getSize() * 8 ) + 1);
+		double numSlots = (8.0 * HeapFile.PAGE_SIZE) / ((td.getSize() * 8.0 ) + 1.0);
 		return (int) Math.floor(numSlots);
 	}
 
@@ -72,8 +74,14 @@ public class HeapPage {
 	 * @return true if occupied
 	 */
 	public boolean slotOccupied(int s) {
-		byte currentByte = header[(int)s/8];
+//		for (byte element : header) {
+//			System.out.println("element is: " +  element);
+//		}
+		System.out.println("testing slot " + s);
+		byte currentByte = header[(int) s / 8];
 		int currentBit = (currentByte >> (s % 8) & 1);
+		System.out.println("currentByte is " + currentByte);
+		System.out.println("currentBit is " + currentBit);
 		return currentBit > 0 ? true : false;
 	}
 
@@ -83,7 +91,15 @@ public class HeapPage {
 	 * @param value its occupied status
 	 */
 	public void setSlotOccupied(int s, boolean value) {
-		//your code here
+		byte currentByte = header[(int) s / 8];
+		int shiftValue = s % 8;
+		if (value) {
+			currentByte |= 1 << shiftValue;
+		}
+		else {
+			currentByte &= ~(1 << shiftValue);
+		}
+		header[(int) s / 8] = currentByte;
 	}
 	
 	/**
@@ -93,7 +109,22 @@ public class HeapPage {
 	 * @throws Exception
 	 */
 	public void addTuple(Tuple t) throws Exception {
-		//your code here
+		//TODO: throw exception if given tuple does not have same structure as tuples within page. Implement hash function?
+		boolean addedTuple = false;
+		for(int i = 0; i < this.getHeaderSize(); i++) {
+			System.out.println("at slot: " + i);
+			if(!this.slotOccupied(i)) {
+				System.out.println("inserted at slot " + i);
+				this.setSlotOccupied(i, true);
+				this.tuples[i] = t;
+				addedTuple = true;
+				break;
+			}
+		}
+		if (!addedTuple) {
+			System.out.println("exception");
+			throw new Exception();
+		}
 	}
 
 	/**
@@ -102,8 +133,17 @@ public class HeapPage {
 	 * @param t the tuple to be deleted
 	 * @throws Exception
 	 */
-	public void deleteTuple(Tuple t) {
-		//your code here
+	public void deleteTuple(Tuple t) throws Exception{
+		if (t.getPid() != this.id) {
+			throw new Exception();
+		}
+		if (!this.slotOccupied(t.getId())) {
+			throw new Exception();
+		}
+		else {
+			this.setSlotOccupied(t.getId(), false);
+			this.tuples[t.getId()] = null;
+		}
 	}
 	
 	/**
@@ -230,7 +270,12 @@ public class HeapPage {
 	 * @return
 	 */
 	public Iterator<Tuple> iterator() {
-		//your code here
-		return null;
+		ArrayList<Tuple> iteratorList = new ArrayList<Tuple>();
+		for(Tuple element : tuples) {
+			if (element != null) {
+				iteratorList.add(element);
+			}
+		}
+		return iteratorList.iterator();
 	}
 }

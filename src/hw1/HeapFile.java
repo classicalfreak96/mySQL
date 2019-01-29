@@ -44,9 +44,30 @@ public class HeapFile {
 	 * should be used here.
 	 * @param id the page number to be retrieved
 	 * @return a HeapPage at the given page number
+	 * @throws IOException 
 	 */
 	public HeapPage readPage(int id) {
-		//your code here
+		System.out.println("accessing page: " + id);
+		byte[] readData = new byte[HeapFile.PAGE_SIZE];
+		int startByte = HeapFile.PAGE_SIZE * id;
+		try {
+			RandomAccessFile theFile = new RandomAccessFile(this.file, "r");
+			theFile.seek(startByte);
+			theFile.read(readData);
+			theFile.close();
+			for (int i = 0; i < readData.length; i++) {
+				if((int) readData[i] == 1) {
+					System.out.println("ONE DETECTED AT POSITION " + i);
+				}
+			}
+			System.out.println("-----------------------");
+			return new HeapPage(id, readData, this.getId());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
