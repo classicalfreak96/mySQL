@@ -112,9 +112,7 @@ public class HeapPage {
 		//TODO: throw exception if given tuple does not have same structure as tuples within page. Implement hash function?
 		boolean addedTuple = false;
 		for(int i = 0; i < this.getHeaderSize(); i++) {
-			System.out.println("at slot: " + i);
 			if(!this.slotOccupied(i)) {
-				System.out.println("inserted at slot " + i);
 				this.setSlotOccupied(i, true);
 				this.tuples[i] = t;
 				addedTuple = true;
@@ -122,7 +120,6 @@ public class HeapPage {
 			}
 		}
 		if (!addedTuple) {
-			System.out.println("exception");
 			throw new Exception();
 		}
 	}

@@ -47,7 +47,6 @@ public class HeapFile {
 	 * @throws IOException 
 	 */
 	public HeapPage readPage(int id) {
-		System.out.println("accessing page: " + id);
 		byte[] readData = new byte[HeapFile.PAGE_SIZE];
 		int startByte = HeapFile.PAGE_SIZE * id;
 		try {
@@ -55,12 +54,6 @@ public class HeapFile {
 			theFile.seek(startByte);
 			theFile.read(readData);
 			theFile.close();
-			for (int i = 0; i < readData.length; i++) {
-				if((int) readData[i] == 1) {
-					System.out.println("ONE DETECTED AT POSITION " + i);
-				}
-			}
-			System.out.println("-----------------------");
 			return new HeapPage(id, readData, this.getId());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
