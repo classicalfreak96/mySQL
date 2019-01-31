@@ -11,12 +11,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+// QUESTIONS: addTuple(), deleteTuple() how to check for "structure"?
 
 public class HeapPage {
 
 	private int id;
 	private byte[] header;
-	private Tuple[] tuples;
+	private Tuple[] tuples; // length: numSlots, one slot = one tuple
 	private TupleDesc td;
 	private int numSlots;
 	private int tableId;
@@ -56,8 +57,7 @@ public class HeapPage {
 	 * @return number of slots on this page
 	 */
 	public int getNumSlots() {
-		double numSlots = (8.0 * HeapFile.PAGE_SIZE) / ((td.getSize() * 8.0 ) + 1.0);
-		return (int) Math.floor(numSlots);
+		return (int) (8 * HeapFile.PAGE_SIZE) / ((8 * td.getSize()) + 1);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class HeapPage {
 	 * @return size of header in bytes
 	 */
 	private int getHeaderSize() {
-		return (int) Math.ceil(this.getNumSlots() / 8.0);
+		return (int) Math.ceil((this.getNumSlots() / 8.0));
 	}
 
 	/**
@@ -74,15 +74,11 @@ public class HeapPage {
 	 * @return true if occupied
 	 */
 	public boolean slotOccupied(int s) {
-//		for (byte element : header) {
-//			System.out.println("element is: " +  element);
-//		}
-		System.out.println("testing slot " + s);
-		byte currentByte = header[(int) s / 8];
-		int currentBit = (currentByte >> (s % 8) & 1);
-		System.out.println("currentByte is " + currentByte);
-		System.out.println("currentBit is " + currentBit);
-		return currentBit > 0 ? true : false;
+		// s is a bit in the header
+		int i = (int) (s / 8);
+		byte b = this.header[i];
+		int position = s - (8 * i);
+		return b >> position == 1;
 	}
 
 	/**
@@ -91,15 +87,9 @@ public class HeapPage {
 	 * @param value its occupied status
 	 */
 	public void setSlotOccupied(int s, boolean value) {
-		byte currentByte = header[(int) s / 8];
-		int shiftValue = s % 8;
-		if (value) {
-			currentByte |= 1 << shiftValue;
-		}
-		else {
-			currentByte &= ~(1 << shiftValue);
-		}
-		header[(int) s / 8] = currentByte;
+		int i = (int) (s / 8);
+		int position = s - (8 * i);
+		this.header[i] = value ? (byte) (this.header[i] | (1 << position)) : (byte) (this.header[i] & ~(0 << position));
 	}
 	
 	/**
@@ -109,19 +99,21 @@ public class HeapPage {
 	 * @throws Exception
 	 */
 	public void addTuple(Tuple t) throws Exception {
-		//TODO: throw exception if given tuple does not have same structure as tuples within page. Implement hash function?
-		boolean addedTuple = false;
-		for(int i = 0; i < this.getHeaderSize(); i++) {
+		TupleDesc td = t.getDesc();
+		// checking for structure of tuple
+		if(!td.equals(this.td)) {
+			throw new Exception("Tuple structure does not match the tuples in the heap page");
+		}
+		// if we add t do we need to update its page id?
+		for(int i = 0; i < this.getNumSlots(); i++) {
 			if(!this.slotOccupied(i)) {
 				this.setSlotOccupied(i, true);
 				this.tuples[i] = t;
-				addedTuple = true;
-				break;
+				t.setPid(this.id);
+				return;
 			}
 		}
-		if (!addedTuple) {
-			throw new Exception();
-		}
+		throw new Exception("Heap page full");
 	}
 
 	/**
@@ -131,15 +123,22 @@ public class HeapPage {
 	 * @throws Exception
 	 */
 	public void deleteTuple(Tuple t) throws Exception{
-		if (t.getPid() != this.id) {
-			throw new Exception();
+		TupleDesc td = t.getDesc();
+		if(t.getPid() != this.id) {
+			throw new Exception("Tuple page id does not match the heap page's id");
 		}
-		if (!this.slotOccupied(t.getId())) {
-			throw new Exception();
-		}
-		else {
-			this.setSlotOccupied(t.getId(), false);
-			this.tuples[t.getId()] = null;
+		
+		for(int i = 0; i < this.getNumSlots(); i++) {
+			System.out.println("here");
+			if(td.equals(this.tuples[i].getDesc())) {
+				if(!this.slotOccupied(i)) {
+					throw new Exception("Tuple slot is already empty");
+				}
+				System.out.println("deleted");
+				this.setSlotOccupied(i, false);
+				this.tuples[i] = null;
+				return;
+			}
 		}
 	}
 	
@@ -268,7 +267,7 @@ public class HeapPage {
 	 */
 	public Iterator<Tuple> iterator() {
 		ArrayList<Tuple> iteratorList = new ArrayList<Tuple>();
-		for(Tuple element : tuples) {
+		for(Tuple element : this.tuples) {
 			if (element != null) {
 				iteratorList.add(element);
 			}

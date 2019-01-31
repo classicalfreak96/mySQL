@@ -19,6 +19,7 @@ public class HeapFile {
 	public static final int PAGE_SIZE = 4096;
 	private File file;
 	private TupleDesc type;
+	private int numHeapPages;
 	
 	/**
 	 * Creates a new heap file in the given location that can accept tuples of the given type
@@ -28,6 +29,7 @@ public class HeapFile {
 	public HeapFile(File f, TupleDesc type) {
 		this.file = f;
 		this.type = type;
+		this.numHeapPages = 0;
 	}
 	
 	public File getFile() {
@@ -80,6 +82,19 @@ public class HeapFile {
 	 */
 	public void writePage(HeapPage p) {
 		//your code here
+		int startByte = HeapFile.PAGE_SIZE * p.getId();
+		try {
+			RandomAccessFile theFile = new RandomAccessFile(this.file, "rw");
+			theFile.seek(startByte);
+			theFile.write(p.getPageData());
+			theFile.close();
+			this.numHeapPages++;
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -91,6 +106,14 @@ public class HeapFile {
 	 */
 	public HeapPage addTuple(Tuple t) {
 		//your code here
+		for(int i = 0; i < this.numHeapPages; i++) {
+			HeapPage temp = this.readPage(i);
+			try {
+				temp.addTuple(t);
+			} catch(Exception e) {
+				// idk what to do here...
+			}
+		}
 		return null;
 	}
 	
@@ -109,8 +132,13 @@ public class HeapFile {
 	 * @return
 	 */
 	public ArrayList<Tuple> getAllTuples() {
-		//your code here
-		return null;
+		// wrong, need ALL tuples in ALL HeapPages in the HapFile
+		ArrayList<Tuple> tuples = new ArrayList<>();
+		for(int i = 0; i < this.numHeapPages; i++) {
+			Iterator<Tuple> iter = this.readPage(i).iterator();
+			iter.forEachRemaining(tuples::add);
+		}
+		return tuples;
 	}
 	
 	/**
@@ -118,7 +146,6 @@ public class HeapFile {
 	 * @return the number of pages
 	 */
 	public int getNumPages() {
-		//your code here
-		return 0;
+		return this.numHeapPages;
 	}
 }

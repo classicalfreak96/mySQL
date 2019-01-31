@@ -14,6 +14,11 @@ import java.util.*;
  * to a catalog that reads a catalog table from disk.
  */
 
+// QUESTIONS: getTableId() is the heap file's id the same as the table's id? Or can it be the key (int)
+// 				in our hashmap?
+// tableIdIterator() did we do this correctly? Shouldn't it be iterating over table id's?
+// In general: what is a table id? Who makes it?
+
 public class Catalog {
 	
 //	private ArrayList<TableSchema> tables;
@@ -46,10 +51,8 @@ public class Catalog {
     			}
     		}
     		this.tables.put(file.getId(), new TableSchema(name, file, pkeyField));
-//    		this.tables.add(new TableSchema(name, file, pkeyField));
     }
 
-    //what is the purpose of this function?
     public void addTable(HeapFile file, String name) {
         addTable(file,name,"");
     }
