@@ -70,7 +70,7 @@ public class HeapFileTest {
 			e.printStackTrace();
 			fail("unable to add valid tuple");
 		}
-		
+		System.out.println("size: " + hf.getAllTuples().size());
 		assertTrue(hf.getAllTuples().size() == 2);
 	}
 	

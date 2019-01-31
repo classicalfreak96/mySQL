@@ -110,6 +110,7 @@ public class HeapPage {
 				this.setSlotOccupied(i, true);
 				this.tuples[i] = t;
 				t.setPid(this.id);
+				System.out.println("tuple added to the heap page");
 				return;
 			}
 		}
@@ -129,12 +130,10 @@ public class HeapPage {
 		}
 		
 		for(int i = 0; i < this.getNumSlots(); i++) {
-			System.out.println("here");
 			if(td.equals(this.tuples[i].getDesc())) {
 				if(!this.slotOccupied(i)) {
 					throw new Exception("Tuple slot is already empty");
 				}
-				System.out.println("deleted");
 				this.setSlotOccupied(i, false);
 				this.tuples[i] = null;
 				return;

@@ -29,7 +29,8 @@ public class HeapFile {
 	public HeapFile(File f, TupleDesc type) {
 		this.file = f;
 		this.type = type;
-		this.numHeapPages = 0;
+		this.numHeapPages = (int) Math.ceil(( type.getSize() * this.getAllTuples().size() ) / HeapFile.PAGE_SIZE);
+		System.out.println("HeapFile constructor: " + this.numHeapPages + " " + this.getAllTuples().size());
 	}
 	
 	public File getFile() {
@@ -106,15 +107,25 @@ public class HeapFile {
 	 */
 	public HeapPage addTuple(Tuple t) {
 		//your code here
+		System.out.println("add tuple HeapFile");
 		for(int i = 0; i < this.numHeapPages; i++) {
 			HeapPage temp = this.readPage(i);
 			try {
 				temp.addTuple(t);
+				this.writePage(temp);
+				return temp;
 			} catch(Exception e) {
-				// idk what to do here...
+				e.printStackTrace();
 			}
 		}
-		return null;
+		HeapPage hp = this.readPage(this.numHeapPages);
+		try {
+			hp.addTuple(t);
+			this.writePage(hp);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return hp;
 	}
 	
 	/**
@@ -132,7 +143,6 @@ public class HeapFile {
 	 * @return
 	 */
 	public ArrayList<Tuple> getAllTuples() {
-		// wrong, need ALL tuples in ALL HeapPages in the HapFile
 		ArrayList<Tuple> tuples = new ArrayList<>();
 		for(int i = 0; i < this.numHeapPages; i++) {
 			Iterator<Tuple> iter = this.readPage(i).iterator();
@@ -146,6 +156,9 @@ public class HeapFile {
 	 * @return the number of pages
 	 */
 	public int getNumPages() {
+		
+		// System.out.println(this.file.length() + " " + this.file.getFreeSpace());
+		// System.out.println((this.file.getTotalSpace() - this.file.getFreeSpace()) / HeapFile.PAGE_SIZE);
 		return this.numHeapPages;
 	}
 }
