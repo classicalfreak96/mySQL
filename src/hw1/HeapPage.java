@@ -78,7 +78,7 @@ public class HeapPage {
 		int i = (int) (s / 8);
 		byte b = this.header[i];
 		int position = s - (8 * i);
-		return b >> position == 1;
+		return ((b >> position) & 1) == 1;
 	}
 
 	/**
@@ -110,7 +110,6 @@ public class HeapPage {
 				this.setSlotOccupied(i, true);
 				this.tuples[i] = t;
 				t.setPid(this.id);
-				System.out.println("tuple added to the heap page");
 				return;
 			}
 		}
@@ -266,9 +265,9 @@ public class HeapPage {
 	 */
 	public Iterator<Tuple> iterator() {
 		ArrayList<Tuple> iteratorList = new ArrayList<Tuple>();
-		for(Tuple element : this.tuples) {
-			if (element != null) {
-				iteratorList.add(element);
+		for(int i = 0; i < this.tuples.length; i++) {
+			if (this.tuples[i] != null) {
+				iteratorList.add(this.tuples[i]);
 			}
 		}
 		return iteratorList.iterator();
