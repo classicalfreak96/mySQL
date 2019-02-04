@@ -133,6 +133,20 @@ public class HeapFile {
 	 */
 	public void deleteTuple(Tuple t){
 		//your code here
+		ArrayList<Tuple> allTuples = this.getAllTuples();
+		for(Tuple temp : allTuples) {
+			if(t.getPid() == temp.getPid() && t.getId() == temp.getId()) {
+				HeapPage hp = this.readPage(t.getPid());
+				try {
+					hp.deleteTuple(t);
+					this.writePage(hp);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
 	}
 	
 	/**

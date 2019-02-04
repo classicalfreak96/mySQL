@@ -89,7 +89,7 @@ public class HeapPage {
 	public void setSlotOccupied(int s, boolean value) {
 		int i = (int) (s / 8);
 		int position = s - (8 * i);
-		this.header[i] = value ? (byte) (this.header[i] | (1 << position)) : (byte) (this.header[i] & ~(0 << position));
+		this.header[i] = value ? (byte) (this.header[i] | (1 << position)) : (byte) (this.header[i] & ~(1 << position));
 	}
 	
 	/**
@@ -228,7 +228,7 @@ public class HeapPage {
 				}
 				continue;
 			}
-
+			
 			// non-empty slot
 			for (int j=0; j<td.numFields(); j++) {
 				Field f = tuples[i].getField(j);
