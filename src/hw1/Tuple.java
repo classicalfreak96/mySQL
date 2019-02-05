@@ -84,9 +84,23 @@ public class Tuple {
 	 * the String columns to readable text).
 	 */
 	public String toString() {
-		//your code here
-		//TODO
-		return "";
+		String s = new String();
+		for (int i = 0; i < this.dataArray.length; i++) {
+			Type type = td.getType(i);
+			String fieldName = td.getFieldName(i);
+			Field field = this.getField(i);
+			String toAdd = new String();
+			if (type == Type.STRING) {
+				StringField newString = new StringField(field.toByteArray());
+				toAdd = newString.toString();
+			}
+			else if (type == Type.INT) {
+				IntField newInt = new IntField(field.toByteArray());
+				toAdd = newInt.toString();
+			}
+			s = s + "Position: " + i + ", Type: " + String.valueOf(type) + ", Fieldname: " + fieldName + ", Field Content: " + toAdd + "\n";
+		}
+		return s;
 	}
 }
 	
