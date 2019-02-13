@@ -1,0 +1,8 @@
+While you technically pass the tests I have to take issue with the way you handle creating new heap pages.
+
+It is not appropriate to use an exception as the standard path through a method. Exceptions should be for when things go 
+wrong, and adding a tuple is not unexpected behavior. Instead of adding a tuple to a full heap page and letting it fail,
+you can simply ask the heap page if it is full before attempting to add the tuple. I really don't want to see a giant
+list of error messages just for adding one tuple to the file. (-3)
+
+Total: 97 / 100
