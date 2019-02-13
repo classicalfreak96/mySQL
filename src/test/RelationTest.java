@@ -59,8 +59,8 @@ public class RelationTest {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ar = ar.select(0, RelationalOperator.EQ, new IntField(530));
 		
-		assert(ar.getTuples().size() == 5);
-		assert(ar.getDesc().equals(atd));
+		assertTrue("Should be 5 tuples after select operation", ar.getTuples().size() == 5);
+		assertTrue("select operation does not change tuple description", ar.getDesc().equals(atd));
 	}
 	
 	@Test
@@ -69,9 +69,9 @@ public class RelationTest {
 		ArrayList<Integer> c = new ArrayList<Integer>();
 		c.add(1);
 		ar = ar.project(c);
-		assert(ar.getDesc().getSize() == 4);
-		assert(ar.getTuples().size() == 8);
-		assert(ar.getDesc().getFieldName(0).equals("a2"));
+		assertTrue("Projection should remove one of the columns, making the size smaller", ar.getDesc().getSize() == 4);
+		assertTrue("Projection should not change the number of tuples", ar.getTuples().size() == 8);
+		assertTrue("Projection should retain the column names", ar.getDesc().getFieldName(0).equals("a2"));
 	}
 	
 	@Test
@@ -80,8 +80,8 @@ public class RelationTest {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		tr = tr.join(ar, 0, 0);
 		
-		assert(tr.getTuples().size() == 5);
-		assert(tr.getDesc().getSize() == 141);
+		assertTrue("There should be 5 tuples after the join", tr.getTuples().size() == 5);
+		assertTrue("The size of the tuples should reflect the additional columns from the join", tr.getDesc().getSize() == 141);
 	}
 	
 	@Test
@@ -96,10 +96,10 @@ public class RelationTest {
 		
 		ar = ar.rename(f, n);
 		
-		assertTrue(ar.getTuples().size() == 8);
-		assertTrue(ar.getDesc().getFieldName(0).equals("b1"));
-		assertTrue(ar.getDesc().getFieldName(1).equals("a2"));
-		assertTrue(ar.getDesc().getSize() == 8);
+		assertTrue("Rename should not remove any tuples", ar.getTuples().size() == 8);
+		assertTrue("Rename did not go through", ar.getDesc().getFieldName(0).equals("b1"));
+		assertTrue("Rename changed the wrong column", ar.getDesc().getFieldName(1).equals("a2"));
+		assertTrue("Rename should not add or remove any columns", ar.getDesc().getSize() == 8);
 		
 	}
 	
@@ -111,9 +111,9 @@ public class RelationTest {
 		ar = ar.project(c);
 		ar = ar.aggregate(AggregateOperator.SUM, false);
 		
-		assertTrue(ar.getTuples().size() == 1);
+		assertTrue("The result of an aggregate should be a single tuple", ar.getTuples().size() == 1);
 		IntField agg = (IntField) ar.getTuples().get(0).getField(0);
-		assertTrue(agg.getValue() == 36);
+		assertTrue("The sum of these values was incorrect", agg.getValue() == 36);
 	}
 	
 	@Test
@@ -121,7 +121,7 @@ public class RelationTest {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ar = ar.aggregate(AggregateOperator.SUM, true);
 		
-		assertTrue(ar.getTuples().size() == 4);
+		assertTrue("There should be four tuples after the grouping", ar.getTuples().size() == 4);
 	}
 
 }
