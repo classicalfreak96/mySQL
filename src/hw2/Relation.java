@@ -3,9 +3,12 @@ package hw2;
 import java.util.ArrayList;
 
 import hw1.Field;
+import hw1.IntField;
 import hw1.RelationalOperator;
+import hw1.StringField;
 import hw1.Tuple;
 import hw1.TupleDesc;
+import hw1.Type; //imported because need to use 
 
 /**
  * This class provides methods to perform relational algebra operations. It will be used
@@ -19,7 +22,8 @@ public class Relation {
 	private TupleDesc td;
 	
 	public Relation(ArrayList<Tuple> l, TupleDesc td) {
-		//your code here
+		this.tuples = l;
+		this.td = td;
 	}
 	
 	/**
@@ -30,8 +34,25 @@ public class Relation {
 	 * @return
 	 */
 	public Relation select(int field, RelationalOperator op, Field operand) {
-		//your code here
-		return null;
+		ArrayList<Tuple> tupleList = new ArrayList<Tuple>(this.tuples);
+		Type type = this.td.getType(field);
+		if (type == Type.INT) {
+			IntField toCompare = (IntField) operand;
+			for (Tuple tuple : this.tuples) {
+				if (!tuple.getField(field).compare(op, toCompare)) {
+					tupleList.remove(tuple);
+				}
+			}
+		}
+		if (type == Type.STRING) {
+			StringField toCompare = (StringField) operand;
+			for (Tuple tuple : this.tuples) {
+				if (!tuple.getField(field).compare(op, toCompare)) {
+					tupleList.remove(tuple);
+				}
+			}
+		}
+		return new Relation(tupleList, td);
 	}
 	
 	/**
@@ -41,8 +62,19 @@ public class Relation {
 	 * @return
 	 */
 	public Relation rename(ArrayList<Integer> fields, ArrayList<String> names) {
-		//your code here
-		return null;
+		Type[] copyType = new Type[this.td.numFields()];
+		String[] newField = new String[this.td.numFields()];
+		for (int i = 0; i < this.td.numFields(); i++) {
+			copyType[i] = this.td.getType(i);
+			if (fields.contains(i)) {
+				newField[i] = names.get(i);
+			}
+			else {
+				newField[i] = this.td.getFieldName(i);
+			}
+		}
+		TupleDesc newTD = new TupleDesc(copyType, newField);
+		return new Relation(this.tuples, newTD);
 	}
 	
 	/**
@@ -51,8 +83,21 @@ public class Relation {
 	 * @return
 	 */
 	public Relation project(ArrayList<Integer> fields) {
-		//your code here
-		return null;
+		Type[] newType = new Type[fields.size()];
+		String[] newField = new String[fields.size()];
+		ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
+		for (int i = 0; i < fields.size(); i++) {
+			newType[i] = this.td.getType(fields.get(i));
+			newField[i] = this.td.getFieldName(fields.get(i));
+		}
+		for (Tuple tuple : this.tuples) {
+			Tuple toAppend = new Tuple(new TupleDesc (newType, newField));
+			for (int i = 0; i < fields.size(); i++) {
+				toAppend.setField(i, tuple.getField(fields.get(i)));
+			}
+			tupleList.add(toAppend);
+		}
+		return new Relation(tupleList, new TupleDesc(newType, newField));
 	}
 	
 	/**
@@ -81,13 +126,11 @@ public class Relation {
 	}
 	
 	public TupleDesc getDesc() {
-		//your code here
-		return null;
+		return this.td;
 	}
 	
 	public ArrayList<Tuple> getTuples() {
-		//your code here
-		return null;
+		return this.tuples;
 	}
 	
 	/**
