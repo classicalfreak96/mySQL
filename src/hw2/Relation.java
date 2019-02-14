@@ -62,12 +62,9 @@ public class Relation {
 	 * @return
 	 */
 	public Relation rename(ArrayList<Integer> fields, ArrayList<String> names) {
-		Type[] copyType = new Type[this.td.getSize()];
-		String[] newField = new String[this.td.getSize()];
-		System.out.println("Size of the TD is: " + this.td.getSize());
-		for (int i = 0; i < this.td.getSize(); i++) {
-			System.out.println("Size of the TD is: " + this.td.getSize());
-			System.out.println("Currently at iteration " + i);
+		Type[] copyType = new Type[this.td.numFields()];
+		String[] newField = new String[this.td.numFields()];
+		for (int i = 0; i < this.td.numFields(); i++) {
 			copyType[i] = this.td.getType(i);
 			if (fields.contains(i)) {
 				newField[i] = names.get(i);
