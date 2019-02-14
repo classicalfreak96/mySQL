@@ -9,11 +9,6 @@ import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
 
-/**
- * Processes aggregate functions using the visitor pattern
- * @author Doug Shook
- *
- */
 public class AggregateExpressionVisitor extends ExpressionVisitorAdapter {
 
 	private AggregateOperator op;
@@ -61,11 +56,15 @@ public class AggregateExpressionVisitor extends ExpressionVisitorAdapter {
 		
 		}
 		
-		List<Expression> el = function.getParameters().getExpressions();
-		if(el.size() > 1) {
-			throw new UnsupportedOperationException("Aggregate Functions only");
+		if(op != AggregateOperator.COUNT) {
+			List<Expression> el = function.getParameters().getExpressions();
+			if(el.size() > 1) {
+				throw new UnsupportedOperationException("Aggregate Functions only");
+			} else {
+				column = el.get(0).toString();
+			}
 		} else {
-			column = el.get(0).toString();
+			column = "*";
 		}
 		this.isAggregate = true;
 	}

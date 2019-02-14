@@ -56,6 +56,8 @@ public class HW2Tests {
 		tableId = c.getTableId("A");
 		atd = c.getTupleDesc(tableId);
 		ahf = c.getDbFile(tableId);
+		
+		c.loadSchema("testfiles/B.txt");
 	}
 	
 	@Test
