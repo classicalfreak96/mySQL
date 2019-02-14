@@ -83,8 +83,21 @@ public class Relation {
 	 * @return
 	 */
 	public Relation project(ArrayList<Integer> fields) {
-		//your code here
-		return null;
+		Type[] newType = new Type[fields.size()];
+		String[] newField = new String[fields.size()];
+		ArrayList<Tuple> tupleList = new ArrayList<Tuple>();
+		for (int i = 0; i < fields.size(); i++) {
+			newType[i] = this.td.getType(fields.get(i));
+			newField[i] = this.td.getFieldName(fields.get(i));
+		}
+		for (Tuple tuple : this.tuples) {
+			Tuple toAppend = new Tuple(new TupleDesc (newType, newField));
+			for (int i = 0; i < fields.size(); i++) {
+				toAppend.setField(i, tuple.getField(fields.get(i)));
+			}
+			tupleList.add(toAppend);
+		}
+		return new Relation(tupleList, new TupleDesc(newType, newField));
 	}
 	
 	/**
