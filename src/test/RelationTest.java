@@ -78,8 +78,7 @@ public class RelationTest {
 	public void testJoin() throws Exception {
 		Relation tr = new Relation(testhf.getAllTuples(), testtd);
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
-		tr = tr.join(ar, 0, 0);
-		
+
 		assertTrue("There should be 5 tuples after the join", tr.getTuples().size() == 5);
 		assertTrue("The size of the tuples should reflect the additional columns from the join", tr.getDesc().getSize() == 141);
 	}

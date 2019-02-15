@@ -110,61 +110,56 @@ public class Relation {
 	 * @return
 	 */
 	public Relation join(Relation other, int field1, int field2) throws Exception {
+		//check to make sure the field type is the same
 		if (this.td.getType(field1) != other.td.getType(field2)) {
 			throw new Exception("Field types not equal");
 		}
-//		if (this.td.getFieldName(field1) != other.td.getFieldName(field2)) {
-//			throw new Exception ("Field names not equal");
-//		}
 		
 		//create new tuple description, first column is column on join
-		ArrayList<Type> newType = new ArrayList<Type>();
-		ArrayList<String> newField = new ArrayList<String>();
-		newType.add(this.td.getType(field1));
-		newField.add(this.td.getFieldName(field2));
+		Type[] newType = new Type[(this.td.numFields() + other.td.numFields())];
+		String[] newField = new String[(this.td.numFields() + other.td.numFields())];
+		newType[0] = this.td.getType(field1);
+		newField[0] = (this.td.getFieldName(field1));
 		for (int i = 0; i < this.td.numFields(); i++) {
-			if (i != field1) {
-				newType.add(this.td.getType(i));
-				newField.add(this.td.getFieldName(i));
-			}
+			newType[i] = this.td.getType(i);
+			newField[i] = this.td.getFieldName(i);
 		}
 		for (int i = 0; i < other.td.numFields(); i++) {
-			if (i != field2) {
-				newType.add(other.td.getType(i));
-				newField.add(other.td.getFieldName(i));
-			}
+			newType[this.td.numFields() + i] = other.td.getType(i);
+			newField[this.td.numFields() + i] = other.td.getFieldName(i);
 		}
-		
+
 		//return mapping of key tuples where the key is the field to join on
 		ArrayList<Object> joinKey = new ArrayList<Object>(other.tuples.size());
 		for (int i = 0; i < other.tuples.size(); i++) {
-			System.out.println(i);
-			joinKey.set(i, other.tuples.get(i).getField(field2));
+			joinKey.add(other.tuples.get(i).getField(field2));
 		}
+		System.out.println("joinkey is: " + joinKey);
+		
 		
 		//create new tuples
-		TupleDesc newTupleDesc = new TupleDesc((Type[]) newType.toArray(), (String[]) newField.toArray());
+		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
+		System.out.println("size of tuples: " + this.tuples.size());
 		for (Tuple tuple : this.tuples) {
-			if (joinKey.contains(tuple.getField(field1))) {
+			System.out.println("tuple accessed!");
+			while (joinKey.contains(tuple.getField(field1))) {
 				Tuple newTuple = new Tuple(newTupleDesc);
 				newTuple.setField(0, tuple.getField(field1));
 				int counter = 1;
 				for (int i = 0; i < this.td.numFields(); i++) {
-					if (i != field1) {
-						newTuple.setField(counter, tuple.getField(i));
-						counter ++;
-					}
+					newTuple.setField(counter, tuple.getField(i));
+					counter ++;
 				}
 				for (int i = 0; i < other.td.numFields(); i++) {
-					if (i != field2) {
-						newTuple.setField(counter, other.getTuples().get(joinKey.indexOf(tuple.getField(field1))).getField(i));
-					}
+					newTuple.setField(counter, other.getTuples().get(joinKey.indexOf(tuple.getField(field1))).getField(i));
 				}
+				newTuples.add(newTuple);
+				joinKey.remove(joinKey.indexOf(tuple.getField(field1)));
 			}
 		} 
-		
-		return null;
+		System.out.println("Size of new tuple: " + newTupleDesc.getSize());
+		return new Relation(newTuples, newTupleDesc);
 	}
 	
 	/**
