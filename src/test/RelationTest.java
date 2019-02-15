@@ -75,7 +75,7 @@ public class RelationTest {
 	}
 	
 	@Test
-	public void testJoin() {
+	public void testJoin() throws Exception {
 		Relation tr = new Relation(testhf.getAllTuples(), testtd);
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		tr = tr.join(ar, 0, 0);

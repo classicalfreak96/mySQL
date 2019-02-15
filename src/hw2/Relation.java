@@ -113,15 +113,56 @@ public class Relation {
 		if (this.td.getType(field1) != other.td.getType(field2)) {
 			throw new Exception("Field types not equal");
 		}
-		if (this.td.getFieldName(field1) != other.td.getFieldName(field2)) {
-			throw new Exception ("Field names not equal");
-		}
+//		if (this.td.getFieldName(field1) != other.td.getFieldName(field2)) {
+//			throw new Exception ("Field names not equal");
+//		}
+		
+		//create new tuple description, first column is column on join
 		ArrayList<Type> newType = new ArrayList<Type>();
 		ArrayList<String> newField = new ArrayList<String>();
-		TupleDesc td1 = this.td;
-		TupleDesc td2 = other.td;
+		newType.add(this.td.getType(field1));
+		newField.add(this.td.getFieldName(field2));
+		for (int i = 0; i < this.td.numFields(); i++) {
+			if (i != field1) {
+				newType.add(this.td.getType(i));
+				newField.add(this.td.getFieldName(i));
+			}
+		}
+		for (int i = 0; i < other.td.numFields(); i++) {
+			if (i != field2) {
+				newType.add(other.td.getType(i));
+				newField.add(other.td.getFieldName(i));
+			}
+		}
 		
+		//return mapping of key tuples where the key is the field to join on
+		ArrayList<Object> joinKey = new ArrayList<Object>(other.tuples.size());
+		for (int i = 0; i < other.tuples.size(); i++) {
+			System.out.println(i);
+			joinKey.set(i, other.tuples.get(i).getField(field2));
+		}
 		
+		//create new tuples
+		TupleDesc newTupleDesc = new TupleDesc((Type[]) newType.toArray(), (String[]) newField.toArray());
+		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
+		for (Tuple tuple : this.tuples) {
+			if (joinKey.contains(tuple.getField(field1))) {
+				Tuple newTuple = new Tuple(newTupleDesc);
+				newTuple.setField(0, tuple.getField(field1));
+				int counter = 1;
+				for (int i = 0; i < this.td.numFields(); i++) {
+					if (i != field1) {
+						newTuple.setField(counter, tuple.getField(i));
+						counter ++;
+					}
+				}
+				for (int i = 0; i < other.td.numFields(); i++) {
+					if (i != field2) {
+						newTuple.setField(counter, other.getTuples().get(joinKey.indexOf(tuple.getField(field1))).getField(i));
+					}
+				}
+			}
+		} 
 		
 		return null;
 	}

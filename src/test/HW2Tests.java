@@ -81,7 +81,7 @@ public class HW2Tests {
 	}
 	
 	@Test
-	public void testJoinR() {
+	public void testJoinR() throws Exception {
 		Relation tr = new Relation(testhf.getAllTuples(), testtd);
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		tr = tr.join(ar, 0, 0);
