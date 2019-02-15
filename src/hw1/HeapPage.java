@@ -104,16 +104,29 @@ public class HeapPage {
 		if(!td.equals(this.td)) {
 			throw new Exception("Tuple structure does not match the tuples in the heap page");
 		}
-		// if we add t do we need to update its page id?
+		// first check if there are available slots
+		boolean full = true;
+		int unoccupiedSlot = 0;
 		for(int i = 0; i < this.getNumSlots(); i++) {
 			if(!this.slotOccupied(i)) {
-				this.setSlotOccupied(i, true);
-				this.tuples[i] = t;
-				t.setPid(this.id);
-				return;
+				full = false;
+				unoccupiedSlot = i;
+				break;
 			}
 		}
-		throw new Exception("Heap page full");
+		if(full) {
+			throw new Exception("Heap Page full");
+		}
+		this.setSlotOccupied(unoccupiedSlot, true);
+		this.tuples[unoccupiedSlot] = t;
+		t.setPid(this.id);
+//		for(int i = 0; i < this.getNumSlots(); i++) {
+//			if(!this.slotOccupied(i)) {
+//				this.setSlotOccupied(i, true);
+//				this.tuples[i] = t;
+//				t.setPid(this.id);
+//			}
+//		}
 	}
 
 	/**
