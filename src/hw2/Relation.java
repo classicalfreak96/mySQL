@@ -131,18 +131,17 @@ public class Relation {
 
 		//return mapping of key tuples where the key is the field to join on
 		ArrayList<Object> joinKey = new ArrayList<Object>(other.tuples.size());
+		ArrayList<Object> joinKeyCopy = new ArrayList<Object>(other.tuples.size());
 		for (int i = 0; i < other.tuples.size(); i++) {
 			joinKey.add(other.tuples.get(i).getField(field2));
+			joinKeyCopy.add(other.tuples.get(i).getField(field2));
 		}
-		System.out.println("joinkey is: " + joinKey);
 		
 		
 		//create new tuples
 		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
-		System.out.println("size of tuples: " + this.tuples.size());
 		for (Tuple tuple : this.tuples) {
-			System.out.println("tuple accessed!");
 			while (joinKey.contains(tuple.getField(field1))) {
 				Tuple newTuple = new Tuple(newTupleDesc);
 				newTuple.setField(0, tuple.getField(field1));
@@ -157,6 +156,7 @@ public class Relation {
 				newTuples.add(newTuple);
 				joinKey.remove(joinKey.indexOf(tuple.getField(field1)));
 			}
+			joinKey = joinKeyCopy;
 		} 
 		System.out.println("Size of new tuple: " + newTupleDesc.getSize());
 		return new Relation(newTuples, newTupleDesc);
