@@ -109,8 +109,20 @@ public class Relation {
 	 * @param field2 the field number (refer to TupleDesc) from other to be used in the join condition
 	 * @return
 	 */
-	public Relation join(Relation other, int field1, int field2) {
-		//your code here
+	public Relation join(Relation other, int field1, int field2) throws Exception {
+		if (this.td.getType(field1) != other.td.getType(field2)) {
+			throw new Exception("Field types not equal");
+		}
+		if (this.td.getFieldName(field1) != other.td.getFieldName(field2)) {
+			throw new Exception ("Field names not equal");
+		}
+		ArrayList<Type> newType = new ArrayList<Type>();
+		ArrayList<String> newField = new ArrayList<String>();
+		TupleDesc td1 = this.td;
+		TupleDesc td2 = other.td;
+		
+		
+		
 		return null;
 	}
 	
