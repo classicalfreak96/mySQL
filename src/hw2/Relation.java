@@ -110,6 +110,7 @@ public class Relation {
 	 * @return
 	 */
 	public Relation join(Relation other, int field1, int field2) throws Exception {
+		System.out.println("HELLOOOOOO");
 		//check to make sure the field type is the same
 		if (this.td.getType(field1) != other.td.getType(field2)) {
 			throw new Exception("Field types not equal");
@@ -132,16 +133,19 @@ public class Relation {
 		//return mapping of key tuples where the key is the field to join on
 		ArrayList<Object> joinKey = new ArrayList<Object>(other.tuples.size());
 		ArrayList<Object> joinKeyCopy = new ArrayList<Object>(other.tuples.size());
-		for (int i = 0; i < other.tuples.size(); i++) {
+ 		for (int i = 0; i < other.tuples.size(); i++) {
 			joinKey.add(other.tuples.get(i).getField(field2));
 			joinKeyCopy.add(other.tuples.get(i).getField(field2));
 		}
+		System.out.println("joinkey is: " + joinKey);
 		
 		
 		//create new tuples
 		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
+		System.out.println("size of tuples: " + this.tuples.size());
 		for (Tuple tuple : this.tuples) {
+			System.out.println("tuple accessed!");
 			while (joinKey.contains(tuple.getField(field1))) {
 				Tuple newTuple = new Tuple(newTupleDesc);
 				newTuple.setField(0, tuple.getField(field1));
