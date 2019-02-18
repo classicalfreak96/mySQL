@@ -110,7 +110,6 @@ public class Relation {
 	 * @return
 	 */
 	public Relation join(Relation other, int field1, int field2) throws Exception {
-		System.out.println("HELLOOOOOO");
 		//check to make sure the field type is the same
 		if (this.td.getType(field1) != other.td.getType(field2)) {
 			throw new Exception("Field types not equal");
@@ -137,13 +136,11 @@ public class Relation {
 			joinKey.add(other.tuples.get(i).getField(field2));
 			joinKeyCopy.add(other.tuples.get(i).getField(field2));
 		}
-		System.out.println("joinkey is: " + joinKey);
 		
 		
 		//create new tuples
 		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
-		System.out.println("size of tuples: " + this.tuples.size());
 		for (Tuple tuple : this.tuples) {
 			System.out.println("tuple accessed!");
 			while (joinKey.contains(tuple.getField(field1))) {
@@ -162,7 +159,6 @@ public class Relation {
 			}
 			joinKey = joinKeyCopy;
 		} 
-		System.out.println("Size of new tuple: " + newTupleDesc.getSize());
 		return new Relation(newTuples, newTupleDesc);
 	}
 	
@@ -171,10 +167,22 @@ public class Relation {
 	 * @param op the aggregation operation to be performed
 	 * @param groupBy whether or not a grouping should be performed
 	 * @return
+	 * @throws Exception 
 	 */
-	public Relation aggregate(AggregateOperator op, boolean groupBy) {
-		//your code here
-		return null;
+	public Relation aggregate(AggregateOperator op, boolean groupBy) throws Exception {
+		Aggregator aggregator = new Aggregator(op, groupBy, this.td);
+		if (groupBy) {
+			for (Tuple tuple : this.tuples) {
+				aggregator.merge(tuple);
+			}
+		}
+		else {
+			for (Tuple tuple : this.tuples) {
+				aggregator.merge(tuple);
+			}
+		}
+		Relation toReturn = new Relation(aggregator.getResults(), this.td);
+		return toReturn;
 	}
 	
 	public TupleDesc getDesc() {

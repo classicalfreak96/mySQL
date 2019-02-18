@@ -110,7 +110,7 @@ public class HW2Tests {
 	}
 	
 	@Test
-	public void testAggregateR() {
+	public void testAggregateR() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ArrayList<Integer> c = new ArrayList<Integer>();
 		c.add(1);
@@ -123,15 +123,15 @@ public class HW2Tests {
 	}
 	
 	@Test
-	public void testGroupByR() {
+	public void testGroupByR() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ar = ar.aggregate(AggregateOperator.SUM, true);
-		
+		System.out.println(ar.getTuples().size());
 		assertTrue("There should be four tuples after the grouping", ar.getTuples().size() == 4);
 	}
 	
 	@Test
-	public void testAggregateMaxR()  {
+	public void testAggregateMaxR() throws Exception  {
 		Relation rel = new Relation(ahf.getAllTuples(), atd);
 		ArrayList<Integer> x = new ArrayList<Integer>();
 		x.add(0);
@@ -144,7 +144,7 @@ public class HW2Tests {
 	}
 	
 	@Test
-	public void testAggregateMinR()  {
+	public void testAggregateMinR() throws Exception  {
 		Relation rel = new Relation(ahf.getAllTuples(), atd);
 		ArrayList<Integer> x = new ArrayList<Integer>();
 		x.add(0);
@@ -157,7 +157,7 @@ public class HW2Tests {
 	}
 	
 	@Test
-	public void testAggregateAVGR() {
+	public void testAggregateAVGR() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ArrayList<Integer> c = new ArrayList<Integer>();
 		c.add(1);
@@ -170,7 +170,7 @@ public class HW2Tests {
 	}
 	
 	@Test
-	public void testAggregateStringR() {
+	public void testAggregateStringR() throws Exception {
 		Type[] types = {Type.STRING};
 		String[] fields = {"stringcol"};
 		

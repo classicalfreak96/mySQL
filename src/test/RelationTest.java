@@ -103,7 +103,7 @@ public class RelationTest {
 	}
 	
 	@Test
-	public void testAggregate() {
+	public void testAggregate() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ArrayList<Integer> c = new ArrayList<Integer>();
 		c.add(1);
@@ -116,7 +116,7 @@ public class RelationTest {
 	}
 	
 	@Test
-	public void testGroupBy() {
+	public void testGroupBy() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ar = ar.aggregate(AggregateOperator.SUM, true);
 		
