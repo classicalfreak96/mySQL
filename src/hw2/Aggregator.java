@@ -23,7 +23,7 @@ public class Aggregator {
 	private boolean groupBy;
 	private TupleDesc td;
 	private ArrayList<Tuple> result;
-	private ArrayList<String> groups;
+	private ArrayList<String> groups; //contains list of groups 
 
 	public Aggregator(AggregateOperator o, boolean groupBy, TupleDesc td) throws Exception {
 		// your code here
@@ -31,6 +31,7 @@ public class Aggregator {
 		this.groupBy = groupBy;
 		this.td = td;
 		result = new ArrayList<Tuple>();
+		groups = new ArrayList<String>();
 	}
 
 	/**
@@ -40,18 +41,19 @@ public class Aggregator {
 	 * @throws Exception if average or sum function is called on a string
 	 */
 	public void merge(Tuple t) throws Exception {
+		//if groupBy is true
 		if (groupBy) {
-			if (aggregateOperation == AggregateOperator.MIN) {
-				if (groups.contains(t.getField(0).toString())) {
-					int index = groups.indexOf(t.getField(0).toString());
-					this.result.set(index, compare(RelationalOperator.LT, t, this.result.get(index), 1));
-				} else {
-					groups.add(t.getField(0).toString());
+			if (aggregateOperation == AggregateOperator.MIN) {						//aggregate min
+				if (groups != null && groups.contains(t.getField(0).toString())) {	//if group already exists
+					int index = groups.indexOf(t.getField(0).toString());			//get index of group
+					this.result.set(index, compare(RelationalOperator.LT, t, this.result.get(index), 1));	//update based on which value is less
+				} else {									//if group doesn't exist
+					groups.add(t.getField(0).toString());	//add group
 					this.result.add(t);
 				}
 			}
-			if (aggregateOperation == AggregateOperator.MAX) {
-				if (groups.contains(t.getField(0).toString())) {
+			if (aggregateOperation == AggregateOperator.MAX) {						//aggregate max, same idea as above
+				if (groups != null && groups.contains(t.getField(0).toString())) {
 					int index = groups.indexOf(t.getField(0).toString());
 					this.result.set(index, compare(RelationalOperator.GT, t, this.result.get(index), 1));
 				} else {
@@ -59,35 +61,34 @@ public class Aggregator {
 					this.result.add(t);
 				}
 			}
-			if (aggregateOperation == AggregateOperator.COUNT) {
-				if (groups.contains(t.getField(0).toString())) {
-					int index = groups.indexOf(t.getField(0).toString());
-					int count = ((IntField) this.result.get(index).getField(1)).getValue();
-					count++;
-					Tuple tuple = new Tuple(this.td);
+			if (aggregateOperation == AggregateOperator.COUNT) {					//aggregate count
+				if (groups != null && groups.contains(t.getField(0).toString())) {	//if group exists
+					int index = groups.indexOf(t.getField(0).toString());			//get index of group in results array
+					int count = ((IntField) this.result.get(index).getField(1)).getValue();	//get current count
+					count++;								//increment count
+					Tuple tuple = new Tuple(this.td);		//create new tuple with updated count, place into results array
 					tuple.setField(0, t.getField(0));
 					tuple.setField(1, new IntField(count));
 					this.result.set(index, tuple);
-				} else {
-					groups.add(t.getField(0).toString());
-					Tuple tuple = new Tuple(this.td);
+				} else {									//if group doesn't exist
+					groups.add(t.getField(0).toString());	//add into group
+					Tuple tuple = new Tuple(this.td);		//create new tuple with count 1, place into results array
 					tuple.setField(0, t.getField(0));
 					tuple.setField(1, new IntField(1));
 					this.result.add(tuple);
 				}
 			}
-			if (aggregateOperation == AggregateOperator.AVG) {
-				if (this.td.getType(1) == Type.STRING) {
+			if (aggregateOperation == AggregateOperator.AVG) {			//aggregate average
+				if (this.td.getType(1) == Type.STRING) {				//throws error if trying to aggregate string
 					throw new Exception("Strings cannot be averaged");
 				}
-				this.result.add(t);
+				this.result.add(t);										//adds tuple to results array. average handled by getResults
 			}
-			if (aggregateOperation == AggregateOperator.SUM) {
-				if (this.td.getType(1) == Type.STRING) {
+			if (aggregateOperation == AggregateOperator.SUM) {			//aggregate sum
+				if (this.td.getType(1) == Type.STRING) {				//throws error if trying to aggregate string
 					throw new Exception("Strings cannot be summed");
 				}
-				System.out.println("Field Name: " + t.getField(0).toString());
-				if (groups != null) {
+				if (groups != null && groups.contains(t.getField(0).toString())) {	//all same as count, except instead of incrementing count, sum together values in field
 					if (groups.contains(t.getField(0).toString())) {
 						int index = groups.indexOf(t.getField(0).toString());
 						int sum = ((IntField) this.result.get(index).getField(1)).getValue();
@@ -97,14 +98,8 @@ public class Aggregator {
 						tuple.setField(1, new IntField(sum));
 						this.result.set(index, tuple);
 					} 
-					else {
-						groups.add(t.getField(0).toString());
-						Tuple tuple = new Tuple(this.td);
-						tuple.setField(0, t.getField(0));
-						tuple.setField(1, t.getField(1));
-						this.result.add(tuple);
-					}
-				} else {
+				} 
+				else {
 					groups.add(t.getField(0).toString());
 					Tuple tuple = new Tuple(this.td);
 					tuple.setField(0, t.getField(0));
@@ -112,7 +107,7 @@ public class Aggregator {
 					this.result.add(tuple);
 				}
 			}
-		} else {
+		} else {	//if not group by. All functions same as above except doesn't check for existing group/no group name column
 			if (aggregateOperation == AggregateOperator.MIN) {
 				if (result.isEmpty()) {
 					result.add(new Tuple(this.td));
@@ -138,8 +133,6 @@ public class Aggregator {
 					this.result.set(0, tuple);
 				}
 			}
-			// if average, all incoming merge tuples will be added to the arraylist. Average
-			// calculated in getResults() function.
 			if (aggregateOperation == AggregateOperator.AVG) {
 				if (this.td.getType(0) == Type.STRING) {
 					throw new Exception("Strings cannot be averaged");
@@ -205,12 +198,13 @@ public class Aggregator {
 	public ArrayList<Tuple> getResults() {
 		if (this.aggregateOperation != AggregateOperator.AVG) {
 			return this.result;
-		} else {
+		} 
+		else {
 			if (groupBy) {
-				ArrayList<Integer> counts = new ArrayList<Integer>();
-				ArrayList<Integer> sums = new ArrayList<Integer>();
+				ArrayList<Integer> counts = new ArrayList<Integer>();		//counts number of tuples in each group
+				ArrayList<Integer> sums = new ArrayList<Integer>();			//sums up all tuples in each group
 				for (Tuple tuple : this.result) {
-					if (groups.contains(tuple.getField(0).toString())) {
+					if (groups.contains(tuple.getField(0).toString())) {	//places all tuples into correct group, aggregating sum and incrementing count
 						int index = groups.indexOf(tuple.getField(0).toString());
 						sums.set(index, sums.get(index) + ((IntField) tuple.getField(1)).getValue());
 						counts.set(index, counts.get(index) + 1);
@@ -220,16 +214,16 @@ public class Aggregator {
 						counts.add(1);
 					}
 				}
-				ArrayList<Tuple> toReturn = new ArrayList<Tuple>();
+				ArrayList<Tuple> toReturn = new ArrayList<Tuple>();			//return ArrayList
 				for (int i = 0; i < counts.size(); i++) {
 					Tuple tuple = new Tuple(this.td);
 					tuple.setField(0, new StringField(groups.get(i)));
-					tuple.setField(1, new IntField((int) (sums.get(i) / counts.get(i))));
+					tuple.setField(1, new IntField((int) (sums.get(i) / counts.get(i))));	//compute average of each group
 					toReturn.add(tuple);
 				}
-				return toReturn;
+				return toReturn;	//returns
 			} else {
-				int sum = 0;
+				int sum = 0;		//same as above except no groups
 				int count = 0;
 				for (Tuple tuple : this.result) {
 					if (tuple.getField(0) != null) {
