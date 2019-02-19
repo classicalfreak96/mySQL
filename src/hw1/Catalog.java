@@ -21,14 +21,15 @@ import java.util.*;
 
 public class Catalog {
 	
-//	private ArrayList<TableSchema> tables;
-	private HashMap<Integer, TableSchema> tables;
+	// All instances of Catalog should have access to the tables
+	// This is why we make it static and initialize it outside the class' constructor
+	private static HashMap<Integer, TableSchema> tables = new HashMap<Integer, TableSchema>();
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
-    		this.tables = new HashMap<Integer, TableSchema>();
+    		// this.tables = new HashMap<Integer, TableSchema>();
     }
 
     /**
