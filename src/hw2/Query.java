@@ -75,7 +75,7 @@ public class Query {
 				ArrayList<Tuple> tuplesJoin = hfJoin.getAllTuples();
 				Relation rJoin = new Relation(tuplesJoin, tdJoin);
 
-				// extra setup
+				// extra setup to get columns and tables on both sides of expression
 				EqualsTo joinExpression = (EqualsTo) j.getOnExpression(); // we can assume all JOIN conditions will use equals
 				Column cLeft = (Column) joinExpression.getLeftExpression();
 				Column cRight = (Column) joinExpression.getRightExpression();
@@ -98,7 +98,6 @@ public class Query {
 //				ArrayList<Tuple> otherTuples = otherHf.getAllTuples();
 //				Relation otherR = new Relation(otherTuples, otherTd);
 				// Relation otherR = r;
-				
 				System.out.println("THIS TABLE " + thisTable.getName());
 				System.out.println("OTHER TABLE " + otherTable.getName());
 				
@@ -113,19 +112,26 @@ public class Query {
 					otherField = td.nameToId(cLeft.getColumnName());
 //					otherField = otherTd.nameToId(cLeft.getColumnName());
 				}
+				
+				System.out.println("THIS COLUMN " + tdJoin.getFieldName(thisField));
+				System.out.println("OTHER COLUMN " + td.getFieldName(otherField));
+				
 				try {
-					r = r.join(rJoin, otherField, thisField);
-//					if(i == 0) {
-//						r = r.join(rJoin, otherField, thisField);
-//					} else {
+					if(i == 0) {
+						r = r.join(rJoin, otherField, thisField);
 //						r = rJoin.join(r, thisField, otherField);
-//					}
+					} else {
+						r = rJoin.join(r, otherField, thisField);
+					}
+					
 					td = r.getDesc();
 					System.out.println("SIZE " + r.getTuples().size());
+					System.out.println("CURRENT " + td.toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				System.out.println("=============================================");
 			}
 		}
 		
