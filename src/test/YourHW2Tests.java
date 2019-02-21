@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class YourHW2Tests {
 		String tupleDescString = ar.getDesc().toString();
 		assertTrue("TupleDesc toString does not contain tupleDesc", s.contains(tupleDescString));
 		for (int i = 0; i < ar.getTuples().size(); i++) {
-			for (int j = 0; j < ar.getDesc().getSize(); j++) {
+			for (int j = 0; j < ar.getDesc().numFields(); j++) {
 				Type type = ar.getDesc().getType(j);
 				Field field = ar.getTuples().get(i).getField(j);
 				if (type == Type.STRING) {
@@ -87,8 +88,23 @@ public class YourHW2Tests {
 		
 		assertTrue(r.getDesc().getSize() == 8);
 		assertTrue(r.getTuples().size() == 4);
-		IntField agg = (IntField) r.getTuples().get(0).getField(0);
-		assertTrue(agg.getValue() == 36);
+		ArrayList<Integer> groups = new ArrayList<Integer>();
+		ArrayList<Integer> sums = new ArrayList<Integer>();
+		
+		for(Tuple t : r.getTuples()) {
+			groups.add(((IntField)t.getField(0)).getValue());
+			sums.add(((IntField)t.getField(1)).getValue());
+		}
+		assertTrue("Missing grouping", groups.contains(1));
+		assertTrue("Missing grouping", groups.contains(530));
+		assertTrue("Missing grouping", groups.contains(2));
+		assertTrue("Missing grouping", groups.contains(3));
+		
+		assertTrue("Missing sum", sums.contains(2));
+		assertTrue("Missing sum", sums.contains(20));
+		assertTrue("Missing sum", sums.contains(6));
+		assertTrue("Missing sum", sums.contains(8));
+		
 	}
 
 }

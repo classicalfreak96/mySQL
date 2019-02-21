@@ -123,7 +123,13 @@ public class TupleDesc {
 	public int hashCode() {
 		// If you want to use TupleDesc as keys for HashMap, implement this so
 		// that equal objects have equals hashCode() results
-		throw new UnsupportedOperationException("unimplemented");
+		// throw new UnsupportedOperationException("unimplemented");
+		int prime = 17;
+		int hash = 1;
+		for(int i = 0; i < this.types.length; i++) {
+			hash = (prime * hash) + ((i+1)*this.types[i].hashCode());
+		}
+		return hash;
 	}
 
 	/**

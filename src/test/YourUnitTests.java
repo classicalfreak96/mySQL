@@ -44,7 +44,6 @@ public class YourUnitTests {
 	}
 	
 	@Test
-	
 	public void testTupleDescHashCode() {
 		TupleDesc td1 = new TupleDesc(new Type[]{Type.INT}, new String[]{""});
 		TupleDesc td2 = new TupleDesc(new Type[]{Type.INT}, new String[]{""});
@@ -55,14 +54,15 @@ public class YourUnitTests {
 		assertTrue(td1.hashCode() == td2.hashCode());
 		assertTrue(td3.hashCode() == td3.hashCode());
 		assertTrue(td4.hashCode() == td4.hashCode());
+		assertTrue(td3.hashCode() == td4.hashCode());
 		
 		assertFalse(td1.hashCode() == td3.hashCode());
 		assertFalse(td2.hashCode() == td3.hashCode());
 		assertFalse(td1.hashCode() == td4.hashCode());
 		assertFalse(td2.hashCode() == td4.hashCode());
-		assertFalse(td3.hashCode() == td4.hashCode());
 	}
-
+	
+	@Test
 	public void testTupleDescToString(){
 		TupleDesc td1 = new TupleDesc(new Type[]{Type.INT}, new String[]{""});
 		TupleDesc td2 = new TupleDesc(new Type[]{Type.INT, Type.STRING}, new String[]{"", ""});
