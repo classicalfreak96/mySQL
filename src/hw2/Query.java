@@ -11,6 +11,7 @@ import hw1.Tuple;
 import hw1.TupleDesc;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.parser.*;
 import net.sf.jsqlparser.schema.Column;
@@ -52,6 +53,7 @@ public class Query {
 		WhereExpressionVisitor whereExpressionVisitor = new WhereExpressionVisitor();
 		
 		// FROM
+		Table t = (Table) sb.getFromItem();
 		int tableId = c.getTableId(sb.getFromItem().toString()); // for Catalog class
 		TupleDesc td = c.getTupleDesc(tableId);
 		HeapFile hf = c.getDbFile(tableId);
@@ -59,26 +61,66 @@ public class Query {
 		ArrayList<Tuple> tuples = hf.getAllTuples();
 		
 		Relation r = new Relation(tuples, td);
-		 
+		
 		// JOIN		Relation Operation: join
 		List<Join> joins = sb.getJoins();
 		if(joins != null ) {
-			System.out.println("GET ON EXPRESSION " + joins.get(0).getOnExpression().toString()); // expression
-			System.out.println("GET RIGHT ITEM " + joins.get(0).getRightItem().toString()); // table to join on
-			
 			for(int i = 0; i < joins.size(); i++) {
-				Join j = joins.get(i);				
-				// .toString() FEELS OFF, Table() class?
-				int tableIdTemp = c.getTableId(j.getRightItem().toString()); // for Catalog class
-				HeapFile hfTemp = c.getDbFile(tableIdTemp);
-				ArrayList<Tuple> tuplesTemp = hfTemp.getAllTuples();
-				Expression joinExpression = j.getOnExpression();
-				joinExpression.accept(whereExpressionVisitor);
+				Join j = joins.get(i);
+				// JOIN performed on "this" table (refers to A in ... JOIN A ON ....)
+				Table thisTable = (Table) j.getRightItem();
+				int tableIdJoin = c.getTableId(thisTable.getName()); // for Catalog class
+				TupleDesc tdJoin = c.getTupleDesc(tableIdJoin);
+				HeapFile hfJoin = c.getDbFile(tableIdJoin);
+				ArrayList<Tuple> tuplesJoin = hfJoin.getAllTuples();
+				Relation rJoin = new Relation(tuplesJoin, tdJoin);
+
+				// extra setup
+				EqualsTo joinExpression = (EqualsTo) j.getOnExpression(); // we can assume all JOIN conditions will use equals
+				Column cLeft = (Column) joinExpression.getLeftExpression();
+				Column cRight = (Column) joinExpression.getRightExpression();
+				Table tLeft = cLeft.getTable();
+				Table tRight = cRight.getTable();
 				
-				// Relation.join(other relation, this relation's field, other relation's field)
-				System.out.println("LEFT SIDE " + whereExpressionVisitor.getLeft());
-				System.out.println("RIGHT SIDE " + whereExpressionVisitor.getRight());
+				System.out.println("LEFT SIDE " + joinExpression.getLeftExpression().toString());
+				System.out.println("RIGHT SIDE " + joinExpression.getRightExpression().toString());
 				
+				// create Relation of other table
+				Table otherTable;
+				if(tLeft.getName().equalsIgnoreCase(thisTable.getName())) {
+					otherTable = tRight; // other table is on right side of expression
+				} else {
+					otherTable = tLeft; // other table is on left side of expression
+				}
+//				int otherTableId = c.getTableId(otherTable.getName()); // for Catalog class
+//				TupleDesc otherTd = c.getTupleDesc(otherTableId);
+//				HeapFile otherHf = c.getDbFile(otherTableId);
+//				ArrayList<Tuple> otherTuples = otherHf.getAllTuples();
+//				Relation otherR = new Relation(otherTuples, otherTd);
+				Relation otherR = r;
+				
+				System.out.println("THIS TABLE " + thisTable.getName());
+				System.out.println("OTHER TABLE " + otherTable.getName());
+				
+				int thisField; // field from current table
+				int otherField; // field from "other" table
+				if(thisTable.getName().equalsIgnoreCase(tLeft.getName())) {
+					thisField = tdJoin.nameToId(cLeft.getColumnName());
+					otherField = td.nameToId(cRight.getColumnName());
+//					otherField = otherTd.nameToId(cRight.getColumnName());
+				} else {
+					thisField = tdJoin.nameToId(cRight.getColumnName());
+					otherField = td.nameToId(cLeft.getColumnName());
+//					otherField = otherTd.nameToId(cLeft.getColumnName());
+				}
+				try {
+					r = otherR.join(rJoin, otherField, thisField);
+					td = r.getDesc();
+					System.out.println("SIZE " + r.getTuples().size());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -102,10 +144,11 @@ public class Query {
 		ArrayList<Integer> fields = new ArrayList<Integer>(); // columns to keep
 		ColumnVisitor cv = new ColumnVisitor();
 		boolean selectAllCols = false;
+		System.out.println(td.toString());
 		for(int i = 0; i < selectItems.size(); i++) {
 			selectItems.get(i).accept(cv);
 			String column = cv.getColumn();
-			System.out.println("COLUMN " + cv.getColumn());
+			System.out.println("COLUMN " + column);
 //			System.out.println("COLUMN OPERATOR " + cv.getOp());
 //			System.out.println("COLUMN AGGREGATE? " + cv.isAggregate());
 			if(column.equals("*")) {

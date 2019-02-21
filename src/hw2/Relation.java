@@ -142,7 +142,7 @@ public class Relation {
 		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
 		for (Tuple tuple : this.tuples) {
-			System.out.println("tuple accessed!");
+			// System.out.println("tuple accessed!");
 			while (joinKey.contains(tuple.getField(field1))) {
 				Tuple newTuple = new Tuple(newTupleDesc);
 				newTuple.setField(0, tuple.getField(field1));
@@ -198,7 +198,13 @@ public class Relation {
 	 * first contain the TupleDesc, followed by each of the tuples in this relation
 	 */
 	public String toString() {
-		//your code here
-		return null;
+		String s = this.td.toString() + " ";
+		for(int i = 0; i < this.tuples.size(); i++) {
+			if(i+1 == this.tuples.size()) {
+				s += this.tuples.get(i).toString();
+			}
+			s += this.tuples.get(i).toString() + ", ";
+		}
+		return s;
 	}
 }
