@@ -37,13 +37,11 @@ public class Query {
 		try {
 			statement = CCJSqlParserUtil.parse(q);
 		} catch (JSQLParserException e) {
-			System.out.println("Unable to parse query");
 			e.printStackTrace();
 		}
 		Select selectStatement = (Select) statement;
 		PlainSelect sb = (PlainSelect)selectStatement.getSelectBody();
 		
-		System.out.println("==================== " + sb.toString());
 		
 		
 		//your code here
@@ -81,9 +79,6 @@ public class Query {
 				Column cRight = (Column) joinExpression.getRightExpression();
 				Table tLeft = cLeft.getTable();
 				Table tRight = cRight.getTable();
-				
-				System.out.println("LEFT SIDE " + joinExpression.getLeftExpression().toString());
-				System.out.println("RIGHT SIDE " + joinExpression.getRightExpression().toString());
 				// create Relation of other table
 				Table otherTable;
 				if(tLeft.getName().equalsIgnoreCase(thisTable.getName())) {
@@ -91,49 +86,24 @@ public class Query {
 				} else {
 					otherTable = tLeft; // other table is on left side of expression
 				}
-//				int otherTableId = c.getTableId(otherTable.getName()); // for Catalog class
-//				TupleDesc otherTd = c.getTupleDesc(otherTableId);
-//				HeapFile otherHf = c.getDbFile(otherTableId);
-//				ArrayList<Tuple> otherTuples = otherHf.getAllTuples();
-//				Relation otherR = new Relation(otherTuples, otherTd);
-				// Relation otherR = r;
-				System.out.println("THIS TABLE " + thisTable.getName());
-				System.out.println("OTHER TABLE " + otherTable.getName());
 				
 				int thisField; // field from current table
 				int otherField; // field from "other" table
 				if(thisTable.getName().equalsIgnoreCase(tLeft.getName())) {
 					thisField = tdJoin.nameToId(cLeft.getColumnName());
 					otherField = td.nameToId(cRight.getColumnName());
-//					otherField = otherTd.nameToId(cRight.getColumnName());
 				} else {
 					thisField = tdJoin.nameToId(cRight.getColumnName());
 					otherField = td.nameToId(cLeft.getColumnName());
-//					otherField = otherTd.nameToId(cLeft.getColumnName());
 				}
-				
-				System.out.println("THIS COLUMN " + tdJoin.getFieldName(thisField));
-				System.out.println("OTHER COLUMN " + td.getFieldName(otherField));
 				
 				try {
 					r = rJoin.join(r, thisField, otherField);
-//					r = r.join(rJoin, otherField, thisField);
-					
-//					if(i == 0) {
-//						r = rJoin.join(r, thisField, otherField);
-//						
-//					} else {						
-//						r = r.join(rJoin, otherField, thisField);
-//					}
-					
 					td = r.getDesc();
-					System.out.println("SIZE " + r.getTuples().size());
-					System.out.println("CURRENT " + td.toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("=============================================");
 			}
 		}
 		
@@ -161,7 +131,6 @@ public class Query {
 		for(int i = 0; i < selectItems.size(); i++) {
 			selectItems.get(i).accept(cv);
 			String column = cv.getColumn();
-			System.out.println("COLUMN " + column);
 //			System.out.println("COLUMN OPERATOR " + cv.getOp());
 //			System.out.println("COLUMN AGGREGATE? " + cv.isAggregate());
 			if(column.equals("*")) {
