@@ -67,7 +67,7 @@ public class Query {
 		if(joins != null ) {
 			for(int i = 0; i < joins.size(); i++) {
 				Join j = joins.get(i);
-				// JOIN performed on "this" table (refers to the A in ... JOIN A ON ....)
+				// JOIN performed on "this" table (refers to the A in ... JOIN A ON ...)
 				Table thisTable = (Table) j.getRightItem();
 				int tableIdJoin = c.getTableId(thisTable.getName()); // for Catalog class
 				TupleDesc tdJoin = c.getTupleDesc(tableIdJoin);
@@ -116,12 +116,15 @@ public class Query {
 				System.out.println("OTHER COLUMN " + td.getFieldName(otherField));
 				
 				try {
-					if(i == 0) {
-						r = r.join(rJoin, otherField, thisField);
+//					r = rJoin.join(r, thisField, otherField);
+					r = r.join(rJoin, otherField, thisField);
+					
+//					if(i == 0) {
 //						r = rJoin.join(r, thisField, otherField);
-					} else {
-						r = rJoin.join(r, otherField, thisField);
-					}
+//						
+//					} else {						
+//						r = r.join(rJoin, otherField, thisField);
+//					}
 					
 					td = r.getDesc();
 					System.out.println("SIZE " + r.getTuples().size());
