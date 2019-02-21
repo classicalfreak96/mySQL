@@ -117,7 +117,6 @@ public class Query {
 				System.out.println("OTHER COLUMN " + td.getFieldName(otherField));
 				
 				try {
-					// flipping should have the same result?
 //					r = rJoin.join(r, thisField, otherField);
 					r = r.join(rJoin, otherField, thisField);
 					
