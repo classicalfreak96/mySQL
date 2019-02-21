@@ -46,52 +46,101 @@ public class Query {
 		
 		
 		//your code here
+		// setup
 		Catalog c = new Catalog();
-		// FROM
-		Table t = new Table();
+		// Pre made class WhereExpressionVisitor let's us parse the WHERE clause easily
+		WhereExpressionVisitor whereExpressionVisitor = new WhereExpressionVisitor();
 		
-		// t.accept(sb.getFromItem());
-		System.out.println(sb.getFromItem().toString());
+		// FROM
 		int tableId = c.getTableId(sb.getFromItem().toString()); // for Catalog class
 		TupleDesc td = c.getTupleDesc(tableId);
 		HeapFile hf = c.getDbFile(tableId);
 		// all tuples from table
 		ArrayList<Tuple> tuples = hf.getAllTuples();
 		
-		
-		// WHERE
-		// Relation Operation: select
 		Relation r = new Relation(tuples, td);
-		Expression e = sb.getWhere();
+		 
+		// JOIN		Relation Operation: join
+		List<Join> joins = sb.getJoins();
+		if(joins != null ) {
+			System.out.println("GET ON EXPRESSION " + joins.get(0).getOnExpression().toString()); // expression
+			System.out.println("GET RIGHT ITEM " + joins.get(0).getRightItem().toString()); // table to join on
+			
+			for(int i = 0; i < joins.size(); i++) {
+				Join j = joins.get(i);				
+				// .toString() FEELS OFF, Table() class?
+				int tableIdTemp = c.getTableId(j.getRightItem().toString()); // for Catalog class
+				HeapFile hfTemp = c.getDbFile(tableIdTemp);
+				ArrayList<Tuple> tuplesTemp = hfTemp.getAllTuples();
+				Expression joinExpression = j.getOnExpression();
+				joinExpression.accept(whereExpressionVisitor);
+				
+				// Relation.join(other relation, this relation's field, other relation's field)
+				System.out.println("LEFT SIDE " + whereExpressionVisitor.getLeft());
+				System.out.println("RIGHT SIDE " + whereExpressionVisitor.getRight());
+				
+			}
+		}
 		
-		// want to parse WHERE clause for arguments (left, right, and operand)
-		// Pre made class WhereExpressionVisitor let's us parse the WHERE clause easily
-		WhereExpressionVisitor whereExpression = new WhereExpressionVisitor();
-
-		// CAREFUL: not all queries have WHERE clauses, so can throw a NullPointerException
-		e.accept(whereExpression);
-		RelationalOperator op = whereExpression.getOp();
-		String fieldName = whereExpression.getLeft();
-		int field = td.nameToId(fieldName);
-		Field operand = whereExpression.getRight();
-		r = r.select(field, op, operand);
+		// WHERE		Relation Operation: select
+		// CAREFUL: not all queries have WHERE clauses, handle or else throws a NullPointerException
+		if(sb.getWhere() != null) {
+			Expression e = sb.getWhere();
+			// want to parse WHERE clause for arguments (left, right, and operand)
+			// visit WHERE clause to parse
+			e.accept(whereExpressionVisitor);
+			RelationalOperator op = whereExpressionVisitor.getOp();
+			String fieldName = whereExpressionVisitor.getLeft();
+			int field = td.nameToId(fieldName);
+			Field operand = whereExpressionVisitor.getRight();
+			r = r.select(field, op, operand);
+		}
 		
-		// SELECT
-		// Relation operation: project
+		// SELECT	Relation operation: project
+		// GROUP BY	Relation operation: aggregate
 		List<SelectItem> selectItems = sb.getSelectItems(); // desired columns
-		ArrayList<Integer> fields = new ArrayList<Integer>();
+		ArrayList<Integer> fields = new ArrayList<Integer>(); // columns to keep
 		ColumnVisitor cv = new ColumnVisitor();
-		selectItems.get(0).accept(cv);
+		boolean selectAllCols = false;
 		for(int i = 0; i < selectItems.size(); i++) {
 			selectItems.get(i).accept(cv);
-			int f = td.nameToId(cv.getColumn());
+			String column = cv.getColumn();
+			System.out.println("COLUMN " + cv.getColumn());
+//			System.out.println("COLUMN OPERATOR " + cv.getOp());
+//			System.out.println("COLUMN AGGREGATE? " + cv.isAggregate());
+			if(column.equals("*")) {
+				// keep all columns
+				selectAllCols = true;
+				break;
+			}
+			int f = td.nameToId(column);
 			fields.add(f);
 		}
-		r = r.project(fields);
+		if(!selectAllCols) {
+			// need to remove unwanted columns before performing GROUP BY (only 1 or 2 columns are handled)
+			r = r.project(fields);
+		}
 		
-		// GROUP BY
-		// Relation operation: aggregate
-		
+		List<Expression> gbExpressions = sb.getGroupByColumnReferences();
+		if(gbExpressions != null) { // GROUP BY performed
+			// in this case, we are allowed to assume first column is GROUP BY and second is aggregate
+			AggregateOperator op = cv.getOp();
+			try {
+				r = r.aggregate(op, true);
+			} catch (Exception e) { // ** we aren't throwing anything inside Relation.aggregate()...
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(cv.isAggregate()) { // aggregate w/out GROUP BY
+			// in this case, we are allowed to assume there is only one column referenced
+			AggregateOperator op = cv.getOp();
+			try {
+				r = r.aggregate(op, false);
+			} catch (Exception e) { // ** we aren't throwing anything inside Relation.aggregate()...
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		return r;
 		

@@ -69,6 +69,7 @@ public class QueryTest {
 	@Test
 	public void testJoin() {
 		Query q = new Query("SELECT c1, c2, a1, a2 FROM test JOIN A ON test.c1 = a.a1");
+//		Query q = new Query("SELECT c1, c2, a1, a2 FROM test JOIN A ON a.a1 = test.c1");
 		Relation r = q.execute();
 		
 		assertTrue("Join should return 5 tuples", r.getTuples().size() == 5);

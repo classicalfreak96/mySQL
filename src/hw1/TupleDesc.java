@@ -60,7 +60,7 @@ public class TupleDesc {
 	 */
 	public int nameToId(String name) throws NoSuchElementException {
 		for (int i = 0; i < this.fields.length; i++) {
-			if (this.fields[i] == name) {
+			if (this.fields[i].equals(name)) {
 				return i;
 			}
 		}
