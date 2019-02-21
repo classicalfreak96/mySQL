@@ -116,8 +116,8 @@ public class Query {
 				System.out.println("OTHER COLUMN " + td.getFieldName(otherField));
 				
 				try {
-//					r = rJoin.join(r, thisField, otherField);
-					r = r.join(rJoin, otherField, thisField);
+					r = rJoin.join(r, thisField, otherField);
+//					r = r.join(rJoin, otherField, thisField);
 					
 //					if(i == 0) {
 //						r = rJoin.join(r, thisField, otherField);

@@ -255,6 +255,7 @@ public class HW2Tests {
 		Query q = new Query("SELECT c1, c2, a1, a2 FROM test JOIN A ON test.c1 = a.a1");
 		Relation r = q.execute();
 		
+		System.out.println("Tuple size is: " + r.getTuples().size());
 		assertTrue("Join should return 5 tuples", r.getTuples().size() == 5);
 		assertTrue("Tuple size should increase since columns were added with join", r.getDesc().getSize() == 141);
 	}

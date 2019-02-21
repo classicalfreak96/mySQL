@@ -110,6 +110,7 @@ public class Relation {
 	 * @return
 	 */
 	public Relation join(Relation other, int field1, int field2) throws Exception {
+		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		//check to make sure the field type is the same
 		if (this.td.getType(field1) != other.td.getType(field2)) {
 			throw new Exception("Field types not equal");
@@ -118,8 +119,6 @@ public class Relation {
 		//create new tuple description joining tds in both columns
 		Type[] newType = new Type[(this.td.numFields() + other.td.numFields())];
 		String[] newField = new String[(this.td.numFields() + other.td.numFields())];
-//		newType[0] = this.td.getType(field1);
-//		newField[0] = (this.td.getFieldName(field1));
 		for (int i = 0; i < this.td.numFields(); i++) {
 			newType[i] = this.td.getType(i);
 			newField[i] = this.td.getFieldName(i);
@@ -133,33 +132,52 @@ public class Relation {
 		ArrayList<Object> joinKey = new ArrayList<Object>(other.tuples.size());
 		ArrayList<Object> joinKeyCopy = new ArrayList<Object>(other.tuples.size());
  		for (int i = 0; i < other.tuples.size(); i++) {
+ 			System.out.println("appending to joinKey");
 			joinKey.add(other.tuples.get(i).getField(field2));
 			joinKeyCopy.add(other.tuples.get(i).getField(field2));
 		}
-		
+		System.out.println("first joinkey size: " + joinKey.size());
 		
 		//create new tuples
 		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
 		for (Tuple tuple : this.tuples) {
-			while (joinKey.contains(tuple.getField(field1))) {
-				Tuple newTuple = new Tuple(newTupleDesc);
-				newTuple.setField(0, tuple.getField(field1));
-				int counter = 0;
-				for (int i = 0; i < this.td.numFields(); i++) {
-					newTuple.setField(counter, tuple.getField(i));
-					counter ++;
+//			int increaser = 0;
+//			while (joinKey.contains(tuple.getField(field1))) {
+//				System.out.println("size of joinkey is: " + joinKey.size());
+//				Tuple newTuple = new Tuple(newTupleDesc);
+//				newTuple.setField(0, tuple.getField(field1));
+//				int counter = 0;
+//				for (int i = 0; i < this.td.numFields(); i++) {
+//					newTuple.setField(counter, tuple.getField(i));
+//					counter ++;
+//				}
+//				for (int i = 0; i < other.td.numFields(); i++) {
+//					newTuple.setField(counter, other.getTuples().get(joinKey.indexOf(tuple.getField(field1)) + increaser).getField(i));
+//				}
+//				newTuples.add(newTuple);
+////				joinKey.set(joinKey.indexOf(tuple.getField(field1)), null);
+//				joinKey.remove(joinKey.indexOf(tuple.getField(field1)));
+//				increaser ++;
+//			}
+//			joinKey = joinKeyCopy;
+			for (Tuple otherTuple : other.tuples) {
+				if (tuple.getField(field1).compare(RelationalOperator.EQ, otherTuple.getField(field2))) {
+					System.out.println("SUCCESS");
+					Tuple newTuple = new Tuple(newTupleDesc);
+					for (int i = 0; i < this.td.numFields(); i++) {
+						newTuple.setField(i, tuple.getField(i));
+					}
+					for (int i = 0; i < other.td.numFields(); i++) {
+						newTuple.setField(i + this.td.numFields(),  otherTuple.getField(i));
+					}
+					newTuples.add(newTuple);
 				}
-				for (int i = 0; i < other.td.numFields(); i++) {
-					newTuple.setField(counter, other.getTuples().get(joinKey.indexOf(tuple.getField(field1))).getField(i));
-				}
-				newTuples.add(newTuple);
-				joinKey.set(joinKey.indexOf(tuple.getField(field1)), null);
 			}
-			joinKey = joinKeyCopy;
 		} 
 		return new Relation(newTuples, newTupleDesc);
 	}
+	
 	
 	/**
 	 * Performs an aggregation operation on a relation. See the lab write up for details.
