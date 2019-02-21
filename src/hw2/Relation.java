@@ -115,11 +115,11 @@ public class Relation {
 			throw new Exception("Field types not equal");
 		}
 		
-		//create new tuple description, first column is column on join
+		//create new tuple description joining tds in both columns
 		Type[] newType = new Type[(this.td.numFields() + other.td.numFields())];
 		String[] newField = new String[(this.td.numFields() + other.td.numFields())];
-		newType[0] = this.td.getType(field1);
-		newField[0] = (this.td.getFieldName(field1));
+//		newType[0] = this.td.getType(field1);
+//		newField[0] = (this.td.getFieldName(field1));
 		for (int i = 0; i < this.td.numFields(); i++) {
 			newType[i] = this.td.getType(i);
 			newField[i] = this.td.getFieldName(i);
@@ -142,11 +142,10 @@ public class Relation {
 		TupleDesc newTupleDesc = new TupleDesc(newType, newField);
 		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
 		for (Tuple tuple : this.tuples) {
-			// System.out.println("tuple accessed!");
 			while (joinKey.contains(tuple.getField(field1))) {
 				Tuple newTuple = new Tuple(newTupleDesc);
 				newTuple.setField(0, tuple.getField(field1));
-				int counter = 1;
+				int counter = 0;
 				for (int i = 0; i < this.td.numFields(); i++) {
 					newTuple.setField(counter, tuple.getField(i));
 					counter ++;
@@ -155,7 +154,7 @@ public class Relation {
 					newTuple.setField(counter, other.getTuples().get(joinKey.indexOf(tuple.getField(field1))).getField(i));
 				}
 				newTuples.add(newTuple);
-				joinKey.remove(joinKey.indexOf(tuple.getField(field1)));
+				joinKey.set(joinKey.indexOf(tuple.getField(field1)), null);
 			}
 			joinKey = joinKeyCopy;
 		} 

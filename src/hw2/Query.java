@@ -84,7 +84,6 @@ public class Query {
 				
 				System.out.println("LEFT SIDE " + joinExpression.getLeftExpression().toString());
 				System.out.println("RIGHT SIDE " + joinExpression.getRightExpression().toString());
-				
 				// create Relation of other table
 				Table otherTable;
 				if(tLeft.getName().equalsIgnoreCase(thisTable.getName())) {
