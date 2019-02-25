@@ -18,7 +18,7 @@ import hw3.Node;
 public class YourHW3Tests {
 	
 	@Test
-	public void testDifferentDegrees() {
+	public void testDifferentLeafDegree() {
 		BPlusTree bt = new BPlusTree(3, 3);
 		
 		bt.insert(new Entry(new IntField(1), 0));
