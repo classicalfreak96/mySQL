@@ -155,6 +155,74 @@ public class BPlusTreeTest {
 		assertTrue(bt.search(new IntField(5)) == null);
 
 	}
+	
+	@Test
+	public void testHigherDegrees() {
+		BPlusTree bt = new BPlusTree(4, 3);
+		bt.insert(new Entry(new IntField(9), 0));
+		bt.insert(new Entry(new IntField(4), 0));
+		bt.insert(new Entry(new IntField(12), 0));
+		bt.insert(new Entry(new IntField(7), 0));
+		bt.insert(new Entry(new IntField(2), 0));
+		bt.insert(new Entry(new IntField(6), 0));
+		bt.insert(new Entry(new IntField(1), 0));
+		bt.insert(new Entry(new IntField(3), 0));
+		bt.insert(new Entry(new IntField(10), 0));
+		
+		//verify root properties
+				Node root = bt.getRoot();
+
+				assertTrue(root.isLeafNode() == false);
+
+				InnerNode in = (InnerNode)root;
+
+				ArrayList<Field> k = in.getKeys();
+				ArrayList<Node> c = in.getChildren();
+
+				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(2)));
+				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(4)));
+				assertTrue(k.get(2).compare(RelationalOperator.EQ, new IntField(7)));
+
+				//grab left and right children from root
+				LeafNode c0 = (LeafNode)c.get(0);
+				LeafNode c1 = (LeafNode)c.get(1);
+				LeafNode c2 = (LeafNode)c.get(2);
+				LeafNode c3 = (LeafNode)c.get(3);
+				assertTrue(c0.isLeafNode() == true);
+				assertTrue(c1.isLeafNode() == true);
+				assertTrue(c2.isLeafNode() == true);
+				assertTrue(c3.isLeafNode() == true);
+
+				
+
+				//check values in left node
+				ArrayList<Entry> c0entries = c0.getEntries();
+
+				assertTrue(c0entries.get(0).getField().equals(new IntField(1)));
+				assertTrue(c0entries.get(1).getField().equals(new IntField(2)));
+
+				//check values in second node
+				ArrayList<Entry> c1entries = c1.getEntries();
+
+				assertTrue(c1entries.get(0).getField().equals(new IntField(3)));
+				assertTrue(c1entries.get(1).getField().equals(new IntField(4)));
+				
+				//check values in third node
+				ArrayList<Entry> c2entries = c2.getEntries();
+
+				assertTrue(c2entries.get(0).getField().equals(new IntField(6)));
+				assertTrue(c2entries.get(1).getField().equals(new IntField(7)));
+				
+				//check values in right most node
+				ArrayList<Entry> c3entries = c3.getEntries();
+
+				assertTrue(c3entries.get(0).getField().equals(new IntField(9)));
+				assertTrue(c3entries.get(1).getField().equals(new IntField(10)));
+				assertTrue(c3entries.get(2).getField().equals(new IntField(12)));
+
+
+
+	}
 
 	@Test
 	public void testDelete() {
@@ -187,7 +255,7 @@ public class BPlusTreeTest {
 		ArrayList<Field> k = in.getKeys();
 		ArrayList<Node> c = in.getChildren();
 
-		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(6)));
 
 		//grab left and right children from root
 		InnerNode l = (InnerNode)c.get(0);
@@ -200,7 +268,7 @@ public class BPlusTreeTest {
 		ArrayList<Field> kl = l.getKeys();
 		ArrayList<Node> cl = l.getChildren();
 
-		assertTrue(kl.get(0).compare(RelationalOperator.EQ, new IntField(2)));
+		assertTrue(kl.get(0).compare(RelationalOperator.EQ, new IntField(1)));
 
 		//get left node's children, verify
 		Node ll = cl.get(0);
