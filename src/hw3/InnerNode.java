@@ -6,23 +6,24 @@ import hw1.Field;
 
 public class InnerNode implements Node {
 	
+	private int degree;
+	private ArrayList<Field> keys;
+	private ArrayList<Node> children;
+	
 	public InnerNode(int degree) {
-		//your code here
+		this.degree = degree;
 	}
 	
 	public ArrayList<Field> getKeys() {
-		//your code here
-		return null;
+		return keys;
 	}
 	
 	public ArrayList<Node> getChildren() {
-		//your code here
-		return null;
+		return children;
 	}
 
 	public int getDegree() {
-		//your code here
-		return 0;
+		return degree;
 	}
 	
 	public boolean isLeafNode() {

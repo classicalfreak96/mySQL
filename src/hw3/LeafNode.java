@@ -4,18 +4,19 @@ import java.util.ArrayList;
 
 public class LeafNode implements Node {
 	
+	private int degree;
+	private ArrayList<Entry> entries;
+	
 	public LeafNode(int degree) {
-		//your code here
+		this.degree = degree;
 	}
 	
 	public ArrayList<Entry> getEntries() {
-		//your code here
-		return null;
+		return entries;
 	}
 
 	public int getDegree() {
-		//your code here
-		return 0;
+		return degree;
 	}
 	
 	public boolean isLeafNode() {
