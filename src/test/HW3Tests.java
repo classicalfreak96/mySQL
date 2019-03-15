@@ -255,7 +255,7 @@ public class HW3Tests {
 		ArrayList<Field> k = in.getKeys();
 		ArrayList<Node> c = in.getChildren();
 
-		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(6)));
+		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
 
 		//grab left and right children from root
 		InnerNode l = (InnerNode)c.get(0);
@@ -527,8 +527,8 @@ public class HW3Tests {
 
 		//check values
 		ArrayList<Entry> c1entries = c1.getEntries();
-		assertTrue(c0entries.get(0).getField().equals(new IntField(9)));
-		assertTrue(c0entries.get(1).getField().equals(new IntField(12)));
+		assertTrue(c1entries.get(0).getField().equals(new IntField(9)));
+		assertTrue(c1entries.get(1).getField().equals(new IntField(12)));
 	}
 	
 	@Test
@@ -703,7 +703,7 @@ public class HW3Tests {
 		InnerNode l = (InnerNode)root_c.get(0);
 		InnerNode r = (InnerNode)root_c.get(1);
 		assertTrue(l.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(2)));
-		assertTrue(l.getKeys().get(1).compare(RelationalOperator.EQ, new IntField(7)));
+		assertTrue(r.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(7)));
 		
 		ArrayList<Node> lc = l.getChildren();
 		assertTrue(lc.get(0).isLeafNode() == true);
