@@ -7,6 +7,7 @@ public interface Node {
 	
 	public int getDegree();
 	public boolean isLeafNode();
+	public boolean isOverflowing();
 	public boolean isFull();
 	public Node findMatch(Field f);
 	public void setParentIndex(int index);

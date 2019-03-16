@@ -50,8 +50,16 @@ public class LeafNode implements Node {
 		this.entries = entries;
 	}
 
-	public boolean isFull() {
+	public boolean isOverflowing() {
 		if (entries.size() >= degree) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean isFull() {
+		if (entries.size() == degree) {
 			return true;
 		} else {
 			return false;
@@ -76,8 +84,12 @@ public class LeafNode implements Node {
 		}
 		entries.add(counter, entry);
 		//if entry is first, update key in parent node
+//		if (counter == 0 && this.parent != null && this.parentIndex != 0) {
+//			System.out.println("HERE");
+//			this.parent.getKeys().set(this.parentIndex - 1, entry.getField());
+//		}
 		if (counter == 0 && this.parent != null && this.parentIndex != 0) {
-			this.parent.getKeys().set(this.parentIndex - 1, entry.getField());
+			this.parent.updateKeys();
 		}
 	}
 

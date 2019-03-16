@@ -17,23 +17,23 @@ import hw3.Node;
 
 public class BPlusTreeTest {
 
-//	@Test
-//	public void testSimpleInsert() {
-//		BPlusTree bt = new BPlusTree(3, 2);
-//		bt.insert(new Entry(new IntField(9), 0));
-//		bt.insert(new Entry(new IntField(4), 1));
-//		assertTrue(bt.getRoot().isLeafNode());
-//
-//		LeafNode l = (LeafNode)bt.getRoot();
-//
-//		assertTrue(l.getEntries().get(0).getField().equals(new IntField(4)));
-//		assertTrue(l.getEntries().get(1).getField().equals(new IntField(9)));
-//
-//		assertTrue(l.getEntries().get(0).getPage() == 1);
-//		assertTrue(l.getEntries().get(1).getPage() == 0);
-//
-//
-//	}
+	@Test
+	public void testSimpleInsert() {
+		BPlusTree bt = new BPlusTree(3, 2);
+		bt.insert(new Entry(new IntField(9), 0));
+		bt.insert(new Entry(new IntField(4), 1));
+		assertTrue(bt.getRoot().isLeafNode());
+
+		LeafNode l = (LeafNode)bt.getRoot();
+
+		assertTrue(l.getEntries().get(0).getField().equals(new IntField(4)));
+		assertTrue(l.getEntries().get(1).getField().equals(new IntField(9)));
+
+		assertTrue(l.getEntries().get(0).getPage() == 1);
+		assertTrue(l.getEntries().get(1).getPage() == 0);
+
+
+	}
 
 	@Test
 	public void testComplexInsert() {
@@ -46,9 +46,9 @@ public class BPlusTreeTest {
 		bt.insert(new Entry(new IntField(7), 0));
 		bt.insert(new Entry(new IntField(2), 0));
 		bt.insert(new Entry(new IntField(6), 0));
-//		bt.insert(new Entry(new IntField(1), 0));
-//		bt.insert(new Entry(new IntField(3), 0));
-//		bt.insert(new Entry(new IntField(10), 0));
+		bt.insert(new Entry(new IntField(1), 0));
+		bt.insert(new Entry(new IntField(3), 0));
+		bt.insert(new Entry(new IntField(10), 0));
 
 		//verify root properties
 		Node root = bt.getRoot();
@@ -59,6 +59,118 @@ public class BPlusTreeTest {
 
 		ArrayList<Field> k = in.getKeys();
 		ArrayList<Node> c = in.getChildren();
+		
+		
+		//block added by Harrison
+		System.out.println("new root is: " + k.get(0).toString());
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(9)));
+//		LeafNode l = (LeafNode)c.get(0);
+//		LeafNode r = (LeafNode)c.get(1);
+//		assertTrue(l.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(l.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(r.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(12)));
+		//insert 7
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(9)));
+//		LeafNode l = (LeafNode)c.get(0);
+//		LeafNode m = (LeafNode)c.get(1);
+//		LeafNode r = (LeafNode)c.get(2);
+//		assertTrue(l.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(l.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(m.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(r.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(12)));
+		//insert 2
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+//		InnerNode l = (InnerNode)c.get(0);
+//		InnerNode r = (InnerNode)c.get(1);
+//		LeafNode ll = (LeafNode)l.getChildren().get(0);
+//		LeafNode lr = (LeafNode)l.getChildren().get(1);
+//		LeafNode rl = (LeafNode)r.getChildren().get(0);
+//		LeafNode rr = (LeafNode)r.getChildren().get(1);
+//		assertTrue(l.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(r.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(ll.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(ll.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(lr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(rl.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(rr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(12)));
+		//insert 6
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+//		InnerNode l = (InnerNode)c.get(0);
+//		InnerNode r = (InnerNode)c.get(1);
+//		LeafNode ll = (LeafNode)l.getChildren().get(0);
+//		LeafNode lr = (LeafNode)l.getChildren().get(1);
+//		LeafNode rl = (LeafNode)r.getChildren().get(0);
+//		LeafNode rr = (LeafNode)r.getChildren().get(1);
+//		System.out.println("KEY IS: " + l.getKeys().get(0).toString());
+//		assertTrue(l.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(r.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(ll.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(ll.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(lr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+//		assertTrue(lr.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(rl.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(rr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(12)));
+		//insert 1
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+//		InnerNode l = (InnerNode)c.get(0);
+//		InnerNode r = (InnerNode)c.get(1);
+//		LeafNode ll = (LeafNode)l.getChildren().get(0);
+//		LeafNode lm = (LeafNode)l.getChildren().get(1);
+//		LeafNode lr = (LeafNode)l.getChildren().get(2);
+//		LeafNode rl = (LeafNode)r.getChildren().get(0);
+//		LeafNode rr = (LeafNode)r.getChildren().get(1);
+//		assertTrue(l.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(l.getKeys().get(1).compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(r.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(ll.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(1)));
+//		assertTrue(ll.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(lm.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(lr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+//		assertTrue(lr.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(rl.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(rr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(12)));
+		//insert 3
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+//		InnerNode l = (InnerNode)c.get(0);
+//		InnerNode r = (InnerNode)c.get(1);
+//		LeafNode ll = (LeafNode)l.getChildren().get(0);
+//		LeafNode lm = (LeafNode)l.getChildren().get(1);
+//		LeafNode lr = (LeafNode)l.getChildren().get(2);
+//		LeafNode rl = (LeafNode)r.getChildren().get(0);
+//		LeafNode rr = (LeafNode)r.getChildren().get(1);
+//		assertTrue(l.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(l.getKeys().get(1).compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(r.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(ll.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(1)));
+//		assertTrue(ll.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(lm.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(3)));
+//		assertTrue(lm.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(lr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+//		assertTrue(lr.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(rl.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(rr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(12)));
+		//insert 10
+//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+//		InnerNode l = (InnerNode)c.get(0);
+//		InnerNode r = (InnerNode)c.get(1);
+//		LeafNode ll = (LeafNode)l.getChildren().get(0);
+//		LeafNode lm = (LeafNode)l.getChildren().get(1);
+//		LeafNode lr = (LeafNode)l.getChildren().get(2);
+//		LeafNode rl = (LeafNode)r.getChildren().get(0);
+//		LeafNode rr = (LeafNode)r.getChildren().get(1);
+//		assertTrue(l.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(l.getKeys().get(1).compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(r.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(ll.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(1)));
+//		assertTrue(ll.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(2)));
+//		assertTrue(lm.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(3)));
+//		assertTrue(lm.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//		assertTrue(lr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+//		assertTrue(lr.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//		assertTrue(rl.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//		assertTrue(rr.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(10)));
+//		assertTrue(rr.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(12)));
 
 		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
 
@@ -81,240 +193,240 @@ public class BPlusTreeTest {
 		assertTrue(kl.get(0).compare(RelationalOperator.EQ, new IntField(2)));
 		assertTrue(kl.get(1).compare(RelationalOperator.EQ, new IntField(4)));
 //
-//		//get left node's children, verify
-//		Node ll = cl.get(0);
-//		Node lm = cl.get(1);
-//		Node lr = cl.get(2);
-//
-//		assertTrue(ll.isLeafNode());
-//		assertTrue(lm.isLeafNode());
-//		assertTrue(lr.isLeafNode());
-//
-//		LeafNode lll = (LeafNode)ll;
-//		LeafNode lml = (LeafNode)lm;
-//		LeafNode lrl = (LeafNode)lr;
-//
-//		ArrayList<Entry> ell = lll.getEntries();
-//
-//		assertTrue(ell.get(0).getField().equals(new IntField(1)));
-//		assertTrue(ell.get(1).getField().equals(new IntField(2)));
-//
-//		ArrayList<Entry> elm = lml.getEntries();
-//
-//		assertTrue(elm.get(0).getField().equals(new IntField(3)));
-//		assertTrue(elm.get(1).getField().equals(new IntField(4)));
-//
-//		ArrayList<Entry> elr = lrl.getEntries();
-//
-//		assertTrue(elr.get(0).getField().equals(new IntField(6)));
-//		assertTrue(elr.get(1).getField().equals(new IntField(7)));
-//
-//		//verify right node
-//		ArrayList<Field> kr = r.getKeys();
-//		ArrayList<Node> cr = r.getChildren();
-//
-//		assertTrue(kr.get(0).compare(RelationalOperator.EQ, new IntField(9)));
-//
-//		//get right node's children, verify
-//		Node rl = cr.get(0);
-//		Node rr = cr.get(1);
-//
-//		assertTrue(rl.isLeafNode());
-//		assertTrue(rr.isLeafNode());
-//
-//		LeafNode rll = (LeafNode)rl;
-//		LeafNode rrl = (LeafNode)rr;
-//
-//		ArrayList<Entry> erl = rll.getEntries();
-//
-//		assertTrue(erl.get(0).getField().equals(new IntField(9)));
-//
-//		ArrayList<Entry> err = rrl.getEntries();
-//
-//		assertTrue(err.get(0).getField().equals(new IntField(10)));
-//		assertTrue(err.get(1).getField().equals(new IntField(12)));
+		//get left node's children, verify
+		Node ll = cl.get(0);
+		Node lm = cl.get(1);
+		Node lr = cl.get(2);
+
+		assertTrue(ll.isLeafNode());
+		assertTrue(lm.isLeafNode());
+		assertTrue(lr.isLeafNode());
+
+		LeafNode lll = (LeafNode)ll;
+		LeafNode lml = (LeafNode)lm;
+		LeafNode lrl = (LeafNode)lr;
+
+		ArrayList<Entry> ell = lll.getEntries();
+
+		assertTrue(ell.get(0).getField().equals(new IntField(1)));
+		assertTrue(ell.get(1).getField().equals(new IntField(2)));
+
+		ArrayList<Entry> elm = lml.getEntries();
+
+		assertTrue(elm.get(0).getField().equals(new IntField(3)));
+		assertTrue(elm.get(1).getField().equals(new IntField(4)));
+
+		ArrayList<Entry> elr = lrl.getEntries();
+
+		assertTrue(elr.get(0).getField().equals(new IntField(6)));
+		assertTrue(elr.get(1).getField().equals(new IntField(7)));
+
+		//verify right node
+		ArrayList<Field> kr = r.getKeys();
+		ArrayList<Node> cr = r.getChildren();
+
+		assertTrue(kr.get(0).compare(RelationalOperator.EQ, new IntField(9)));
+
+		//get right node's children, verify
+		Node rl = cr.get(0);
+		Node rr = cr.get(1);
+
+		assertTrue(rl.isLeafNode());
+		assertTrue(rr.isLeafNode());
+
+		LeafNode rll = (LeafNode)rl;
+		LeafNode rrl = (LeafNode)rr;
+
+		ArrayList<Entry> erl = rll.getEntries();
+
+		assertTrue(erl.get(0).getField().equals(new IntField(9)));
+
+		ArrayList<Entry> err = rrl.getEntries();
+
+		assertTrue(err.get(0).getField().equals(new IntField(10)));
+		assertTrue(err.get(1).getField().equals(new IntField(12)));
 	}
-//
-//	@Test
-//	public void testSearch() {
-//		//create a tree, insert a bunch of values
-//		BPlusTree bt = new BPlusTree(3, 2);
-//		bt.insert(new Entry(new IntField(9), 0));
-//		bt.insert(new Entry(new IntField(4), 0));
-//		bt.insert(new Entry(new IntField(12), 0));
-//		bt.insert(new Entry(new IntField(7), 0));
-//		bt.insert(new Entry(new IntField(2), 0));
-//		bt.insert(new Entry(new IntField(6), 0));
-//		bt.insert(new Entry(new IntField(1), 0));
-//		bt.insert(new Entry(new IntField(3), 0));
-//		bt.insert(new Entry(new IntField(10), 0));
-//
-//		//these values should exist
-//		assertTrue(bt.search(new IntField(12)) != null);
-//		assertTrue(bt.search(new IntField(3)) != null);
-//		assertTrue(bt.search(new IntField(7)) != null);
-//
-//		//these values should not exist
-//		assertTrue(bt.search(new IntField(8)) == null);
-//		assertTrue(bt.search(new IntField(11)) == null);
-//		assertTrue(bt.search(new IntField(5)) == null);
-//
-//	}
-//	
-//	@Test
-//	public void testHigherDegrees() {
-//		BPlusTree bt = new BPlusTree(4, 3);
-//		bt.insert(new Entry(new IntField(9), 0));
-//		bt.insert(new Entry(new IntField(4), 0));
-//		bt.insert(new Entry(new IntField(12), 0));
-//		bt.insert(new Entry(new IntField(7), 0));
-//		bt.insert(new Entry(new IntField(2), 0));
-//		bt.insert(new Entry(new IntField(6), 0));
-//		bt.insert(new Entry(new IntField(1), 0));
-//		bt.insert(new Entry(new IntField(3), 0));
-//		bt.insert(new Entry(new IntField(10), 0));
-//		
-//		//verify root properties
-//				Node root = bt.getRoot();
-//
-//				assertTrue(root.isLeafNode() == false);
-//
-//				InnerNode in = (InnerNode)root;
-//
-//				ArrayList<Field> k = in.getKeys();
-//				ArrayList<Node> c = in.getChildren();
-//
-//				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(2)));
-//				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(4)));
-//				assertTrue(k.get(2).compare(RelationalOperator.EQ, new IntField(7)));
-//
-//				//grab left and right children from root
-//				LeafNode c0 = (LeafNode)c.get(0);
-//				LeafNode c1 = (LeafNode)c.get(1);
-//				LeafNode c2 = (LeafNode)c.get(2);
-//				LeafNode c3 = (LeafNode)c.get(3);
-//				assertTrue(c0.isLeafNode() == true);
-//				assertTrue(c1.isLeafNode() == true);
-//				assertTrue(c2.isLeafNode() == true);
-//				assertTrue(c3.isLeafNode() == true);
-//
-//				
-//
-//				//check values in left node
-//				ArrayList<Entry> c0entries = c0.getEntries();
-//
-//				assertTrue(c0entries.get(0).getField().equals(new IntField(1)));
-//				assertTrue(c0entries.get(1).getField().equals(new IntField(2)));
-//
-//				//check values in second node
-//				ArrayList<Entry> c1entries = c1.getEntries();
-//
-//				assertTrue(c1entries.get(0).getField().equals(new IntField(3)));
-//				assertTrue(c1entries.get(1).getField().equals(new IntField(4)));
-//				
-//				//check values in third node
-//				ArrayList<Entry> c2entries = c2.getEntries();
-//
-//				assertTrue(c2entries.get(0).getField().equals(new IntField(6)));
-//				assertTrue(c2entries.get(1).getField().equals(new IntField(7)));
-//				
-//				//check values in right most node
-//				ArrayList<Entry> c3entries = c3.getEntries();
-//
-//				assertTrue(c3entries.get(0).getField().equals(new IntField(9)));
-//				assertTrue(c3entries.get(1).getField().equals(new IntField(10)));
-//				assertTrue(c3entries.get(2).getField().equals(new IntField(12)));
-//
-//
-//
-//	}
-//
-//	@Test
-//	public void testDelete() {
-//		//Create a tree, then delete some values
-//
-//		BPlusTree bt = new BPlusTree(3, 2);
-//		bt.insert(new Entry(new IntField(9), 0));
-//		bt.insert(new Entry(new IntField(4), 0));
-//		bt.insert(new Entry(new IntField(12), 0));
-//		bt.insert(new Entry(new IntField(7), 0));
-//		bt.insert(new Entry(new IntField(2), 0));
-//		bt.insert(new Entry(new IntField(6), 0));
-//		bt.insert(new Entry(new IntField(1), 0));
-//		bt.insert(new Entry(new IntField(3), 0));
-//		bt.insert(new Entry(new IntField(10), 0));
-//
-//		bt.delete(new Entry(new IntField(7), 0));
-//		bt.delete(new Entry(new IntField(3), 0));
-//		bt.delete(new Entry(new IntField(4), 0));
-//		bt.delete(new Entry(new IntField(10), 0));
-//		bt.delete(new Entry(new IntField(2), 0));
-//
-//		//verify root properties
-//		Node root = bt.getRoot();
-//
-//		assertTrue(root.isLeafNode() == false);
-//
-//		InnerNode in = (InnerNode)root;
-//
-//		ArrayList<Field> k = in.getKeys();
-//		ArrayList<Node> c = in.getChildren();
-//
-//		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(6)));
-//
-//		//grab left and right children from root
-//		InnerNode l = (InnerNode)c.get(0);
-//		InnerNode r = (InnerNode)c.get(1);
-//
-//		assertTrue(l.isLeafNode() == false);
-//		assertTrue(r.isLeafNode() == false);
-//
-//		//check values in left node
-//		ArrayList<Field> kl = l.getKeys();
-//		ArrayList<Node> cl = l.getChildren();
-//
-//		assertTrue(kl.get(0).compare(RelationalOperator.EQ, new IntField(1)));
-//
-//		//get left node's children, verify
-//		Node ll = cl.get(0);
-//		Node lr = cl.get(1);
-//
-//		assertTrue(ll.isLeafNode());
-//		assertTrue(lr.isLeafNode());
-//
-//		LeafNode lll = (LeafNode)ll;
-//		LeafNode lrl = (LeafNode)lr;
-//
-//		ArrayList<Entry> ell = lll.getEntries();
-//
-//		assertTrue(ell.get(0).getField().equals(new IntField(1)));
-//
-//		ArrayList<Entry> elr = lrl.getEntries();
-//
-//		assertTrue(elr.get(0).getField().equals(new IntField(6)));
-//
-//		//verify right node
-//		ArrayList<Field> kr = r.getKeys();
-//		ArrayList<Node> cr = r.getChildren();
-//
-//		assertTrue(kr.get(0).compare(RelationalOperator.EQ, new IntField(9)));
-//
-//		//get right node's children, verify
-//		Node rl = cr.get(0);
-//		Node rr = cr.get(1);
-//
-//		assertTrue(rl.isLeafNode());
-//		assertTrue(rr.isLeafNode());
-//
-//		LeafNode rll = (LeafNode)rl;
-//		LeafNode rrl = (LeafNode)rr;
-//
-//		ArrayList<Entry> erl = rll.getEntries();
-//
-//		assertTrue(erl.get(0).getField().equals(new IntField(9)));
-//
-//		ArrayList<Entry> err = rrl.getEntries();
-//
-//		assertTrue(err.get(0).getField().equals(new IntField(12)));
-//	}
+
+	@Test
+	public void testSearch() {
+		//create a tree, insert a bunch of values
+		BPlusTree bt = new BPlusTree(3, 2);
+		bt.insert(new Entry(new IntField(9), 0));
+		bt.insert(new Entry(new IntField(4), 0));
+		bt.insert(new Entry(new IntField(12), 0));
+		bt.insert(new Entry(new IntField(7), 0));
+		bt.insert(new Entry(new IntField(2), 0));
+		bt.insert(new Entry(new IntField(6), 0));
+		bt.insert(new Entry(new IntField(1), 0));
+		bt.insert(new Entry(new IntField(3), 0));
+		bt.insert(new Entry(new IntField(10), 0));
+
+		//these values should exist
+		assertTrue(bt.search(new IntField(12)) != null);
+		assertTrue(bt.search(new IntField(3)) != null);
+		assertTrue(bt.search(new IntField(7)) != null);
+
+		//these values should not exist
+		assertTrue(bt.search(new IntField(8)) == null);
+		assertTrue(bt.search(new IntField(11)) == null);
+		assertTrue(bt.search(new IntField(5)) == null);
+
+	}
+	
+	@Test
+	public void testHigherDegrees() {
+		BPlusTree bt = new BPlusTree(4, 3);
+		bt.insert(new Entry(new IntField(9), 0));
+		bt.insert(new Entry(new IntField(4), 0));
+		bt.insert(new Entry(new IntField(12), 0));
+		bt.insert(new Entry(new IntField(7), 0));
+		bt.insert(new Entry(new IntField(2), 0));
+		bt.insert(new Entry(new IntField(6), 0));
+		bt.insert(new Entry(new IntField(1), 0));
+		bt.insert(new Entry(new IntField(3), 0));
+		bt.insert(new Entry(new IntField(10), 0));
+		
+		//verify root properties
+				Node root = bt.getRoot();
+
+				assertTrue(root.isLeafNode() == false);
+
+				InnerNode in = (InnerNode)root;
+
+				ArrayList<Field> k = in.getKeys();
+				ArrayList<Node> c = in.getChildren();
+
+				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(2)));
+				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(4)));
+				assertTrue(k.get(2).compare(RelationalOperator.EQ, new IntField(7)));
+
+				//grab left and right children from root
+				LeafNode c0 = (LeafNode)c.get(0);
+				LeafNode c1 = (LeafNode)c.get(1);
+				LeafNode c2 = (LeafNode)c.get(2);
+				LeafNode c3 = (LeafNode)c.get(3);
+				assertTrue(c0.isLeafNode() == true);
+				assertTrue(c1.isLeafNode() == true);
+				assertTrue(c2.isLeafNode() == true);
+				assertTrue(c3.isLeafNode() == true);
+
+				
+
+				//check values in left node
+				ArrayList<Entry> c0entries = c0.getEntries();
+
+				assertTrue(c0entries.get(0).getField().equals(new IntField(1)));
+				assertTrue(c0entries.get(1).getField().equals(new IntField(2)));
+
+				//check values in second node
+				ArrayList<Entry> c1entries = c1.getEntries();
+
+				assertTrue(c1entries.get(0).getField().equals(new IntField(3)));
+				assertTrue(c1entries.get(1).getField().equals(new IntField(4)));
+				
+				//check values in third node
+				ArrayList<Entry> c2entries = c2.getEntries();
+
+				assertTrue(c2entries.get(0).getField().equals(new IntField(6)));
+				assertTrue(c2entries.get(1).getField().equals(new IntField(7)));
+				
+				//check values in right most node
+				ArrayList<Entry> c3entries = c3.getEntries();
+
+				assertTrue(c3entries.get(0).getField().equals(new IntField(9)));
+				assertTrue(c3entries.get(1).getField().equals(new IntField(10)));
+				assertTrue(c3entries.get(2).getField().equals(new IntField(12)));
+
+
+
+	}
+
+	@Test
+	public void testDelete() {
+		//Create a tree, then delete some values
+
+		BPlusTree bt = new BPlusTree(3, 2);
+		bt.insert(new Entry(new IntField(9), 0));
+		bt.insert(new Entry(new IntField(4), 0));
+		bt.insert(new Entry(new IntField(12), 0));
+		bt.insert(new Entry(new IntField(7), 0));
+		bt.insert(new Entry(new IntField(2), 0));
+		bt.insert(new Entry(new IntField(6), 0));
+		bt.insert(new Entry(new IntField(1), 0));
+		bt.insert(new Entry(new IntField(3), 0));
+		bt.insert(new Entry(new IntField(10), 0));
+
+		bt.delete(new Entry(new IntField(7), 0));
+		bt.delete(new Entry(new IntField(3), 0));
+		bt.delete(new Entry(new IntField(4), 0));
+		bt.delete(new Entry(new IntField(10), 0));
+		bt.delete(new Entry(new IntField(2), 0));
+
+		//verify root properties
+		Node root = bt.getRoot();
+
+		assertTrue(root.isLeafNode() == false);
+
+		InnerNode in = (InnerNode)root;
+
+		ArrayList<Field> k = in.getKeys();
+		ArrayList<Node> c = in.getChildren();
+
+		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(6)));
+
+		//grab left and right children from root
+		InnerNode l = (InnerNode)c.get(0);
+		InnerNode r = (InnerNode)c.get(1);
+
+		assertTrue(l.isLeafNode() == false);
+		assertTrue(r.isLeafNode() == false);
+
+		//check values in left node
+		ArrayList<Field> kl = l.getKeys();
+		ArrayList<Node> cl = l.getChildren();
+
+		assertTrue(kl.get(0).compare(RelationalOperator.EQ, new IntField(1)));
+
+		//get left node's children, verify
+		Node ll = cl.get(0);
+		Node lr = cl.get(1);
+
+		assertTrue(ll.isLeafNode());
+		assertTrue(lr.isLeafNode());
+
+		LeafNode lll = (LeafNode)ll;
+		LeafNode lrl = (LeafNode)lr;
+
+		ArrayList<Entry> ell = lll.getEntries();
+
+		assertTrue(ell.get(0).getField().equals(new IntField(1)));
+
+		ArrayList<Entry> elr = lrl.getEntries();
+
+		assertTrue(elr.get(0).getField().equals(new IntField(6)));
+
+		//verify right node
+		ArrayList<Field> kr = r.getKeys();
+		ArrayList<Node> cr = r.getChildren();
+
+		assertTrue(kr.get(0).compare(RelationalOperator.EQ, new IntField(9)));
+
+		//get right node's children, verify
+		Node rl = cr.get(0);
+		Node rr = cr.get(1);
+
+		assertTrue(rl.isLeafNode());
+		assertTrue(rr.isLeafNode());
+
+		LeafNode rll = (LeafNode)rl;
+		LeafNode rrl = (LeafNode)rr;
+
+		ArrayList<Entry> erl = rll.getEntries();
+
+		assertTrue(erl.get(0).getField().equals(new IntField(9)));
+
+		ArrayList<Entry> err = rrl.getEntries();
+
+		assertTrue(err.get(0).getField().equals(new IntField(12)));
+	}
 }

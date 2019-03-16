@@ -60,8 +60,16 @@ public class InnerNode implements Node {
 		return false;
 	}
 
-	public boolean isFull() {
+	public boolean isOverflowing() {
 		if (keys.size() >= degree) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean isFull() {
+		if (keys.size() == degree) {
 			return true;
 		} else {
 			return false;
@@ -69,31 +77,45 @@ public class InnerNode implements Node {
 	}
 
 	public void updateKeys() {
-		for (int i = 1; i < children.size(); i++) {
-			if (children.get(0).isLeafNode()) {
-				// if index in key array has not yet been initialized- space has never been used
-				if (keys.size() < i) {
-					keys.add(i - 1, ((LeafNode) children.get(i)).getEntries().get(0).getField());
-				}
-				// if space is already used but need to update key
-				else {
-					keys.set(i - 1, ((LeafNode) children.get(i)).getEntries().get(0).getField());
-				}
-				// TODO: need to delete all keys with children that have been deleted
-			}
+//		for (int i = 0; i < children.size() - 1; i++) {
+//			if (children.get(0).isLeafNode()) {
+//				int size = ((LeafNode) children.get(i)).getEntries().size();
+//				// if index in key array has not yet been initialized- space has never been used
+//				if (keys.size() == 0) {
+//					System.out.println("here 3");
+//					this.keys.add(i, ((LeafNode) this.children.get(i)).getEntries().get(size - 1).getField());
+//				}
+////				else if () {
+////					
+////				}
+//				// if space is already used but need to update key
+//				else {
+//					System.out.println("here2!!");
+//					this.keys.set(i, ((LeafNode) this.children.get(i)).getEntries().get(size - 1).getField());
+//				}
+//				// TODO: need to delete all keys with children that have been deleted
+//			}
+//		}
+		
+		ArrayList<Field> newKeys = new ArrayList<Field>();
+		for (Node child: children) {
+			int size = ((LeafNode) child).getEntries().size();
+			newKeys.add(((LeafNode) child).getEntries().get(size - 1).getField());
 		}
+		newKeys.remove(newKeys.size() - 1);
+		this.keys = newKeys;
 	}
 
 	public Node findMatch(Field f) {
 		int counter = 0;
-		if (f.compare(RelationalOperator.LT, keys.get(counter))) {
+		if (f.compare(RelationalOperator.LTE, keys.get(counter))) {
 			return children.get(counter);
 		}
-		if (f.compare(RelationalOperator.GTE, keys.get(keys.size() - 1))) {
+		if (f.compare(RelationalOperator.GT, keys.get(keys.size() - 1))) {
 			return children.get(keys.size());
 		}
-		while (!(f.compare(RelationalOperator.GTE, keys.get(counter))
-				&& f.compare(RelationalOperator.LT, keys.get(counter + 1)))) {
+		while (!(f.compare(RelationalOperator.GT, keys.get(counter))
+				&& f.compare(RelationalOperator.LTE, keys.get(counter + 1)))) {
 			counter++;
 		}
 		return children.get(counter + 1);
