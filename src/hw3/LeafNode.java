@@ -7,10 +7,11 @@ import hw1.RelationalOperator;
 
 public class LeafNode implements Node {
 
-	private int degree;
+	private int degree; //number of data points
 	private ArrayList<Entry> entries;
 	private InnerNode parent;
-	private int parentIndex;
+	private int parentIndex; //the index of the key in the parent on the right that points to this leafNode.
+	                         //rightmost leaf node's parent index is parent.getKeys().size() (cannot use to index in parent) 
 
 	public LeafNode(int degree) {
 		this.degree = degree;
@@ -49,17 +50,10 @@ public class LeafNode implements Node {
 	public void setEntries(ArrayList<Entry> entries) {
 		this.entries = entries;
 	}
-
-	public boolean isOverflowing() {
-		if (entries.size() >= degree) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
+	//checks if the leafNode is full or overflowing
 	public boolean isFull() {
-		if (entries.size() == degree) {
+		if (entries.size() >= degree) {
 			return true;
 		} else {
 			return false;
@@ -84,10 +78,6 @@ public class LeafNode implements Node {
 		}
 		entries.add(counter, entry);
 		//if entry is first, update key in parent node
-//		if (counter == 0 && this.parent != null && this.parentIndex != 0) {
-//			System.out.println("HERE");
-//			this.parent.getKeys().set(this.parentIndex - 1, entry.getField());
-//		}
 		if (counter == 0 && this.parent != null && this.parentIndex != 0) {
 			this.parent.updateKeys();
 		}

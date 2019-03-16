@@ -11,7 +11,7 @@ public class InnerNode implements Node {
 	private ArrayList<Field> keys;
 	private ArrayList<Node> children;
 	private InnerNode parent;
-	private int parentIndex;
+	private int parentIndex; //same as parentIndex of LeafNode
 
 	public InnerNode(int degree) {
 		this.degree = degree;
@@ -59,44 +59,17 @@ public class InnerNode implements Node {
 	public boolean isLeafNode() {
 		return false;
 	}
-
-	public boolean isOverflowing() {
+	
+	public boolean isFull() {
 		if (keys.size() >= degree) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
-	public boolean isFull() {
-		if (keys.size() == degree) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
+	//updates all keys based on new children insertions or updated children values 
 	public void updateKeys() {
-//		for (int i = 0; i < children.size() - 1; i++) {
-//			if (children.get(0).isLeafNode()) {
-//				int size = ((LeafNode) children.get(i)).getEntries().size();
-//				// if index in key array has not yet been initialized- space has never been used
-//				if (keys.size() == 0) {
-//					System.out.println("here 3");
-//					this.keys.add(i, ((LeafNode) this.children.get(i)).getEntries().get(size - 1).getField());
-//				}
-////				else if () {
-////					
-////				}
-//				// if space is already used but need to update key
-//				else {
-//					System.out.println("here2!!");
-//					this.keys.set(i, ((LeafNode) this.children.get(i)).getEntries().get(size - 1).getField());
-//				}
-//				// TODO: need to delete all keys with children that have been deleted
-//			}
-//		}
-		
 		ArrayList<Field> newKeys = new ArrayList<Field>();
 		for (Node child: children) {
 			int size = ((LeafNode) child).getEntries().size();
@@ -106,6 +79,7 @@ public class InnerNode implements Node {
 		this.keys = newKeys;
 	}
 
+	//finds a matching children to return when looking for a field
 	public Node findMatch(Field f) {
 		int counter = 0;
 		if (f.compare(RelationalOperator.LTE, keys.get(counter))) {
