@@ -40,24 +40,24 @@ public class BPlusTree {
     		leafNode.insert(e);
     	}
     	else {
-    		ArrayList<Entry> sortedList = new ArrayList<Entry>(leafNode.getEntries());
+//    		ArrayList<Entry> sortedList = new ArrayList<Entry>(leafNode.getEntries());
 			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
 			Boolean added = false;
-			for(int i = 0; i < sortedList.size(); i++) {
-				if (e.getField().compare(RelationalOperator.LTE, sortedList.get(i).getField())) {
-					sortedList.add(i, e);
+			for(int i = 0; i < leafNode.getEntries().size(); i++) {
+				if (e.getField().compare(RelationalOperator.LTE, leafNode.getEntries().get(i).getField())) {
+					leafNode.getEntries().add(i, e);
 					added = true;
 					break;
 				}
 				if (!added) {
-					sortedList.add(e);
+					leafNode.getEntries().add(e);
 					break;
 				}
 			}
-			int indexToRemove = Math.floorDiv(sortedList.size(), 2);
-			System.out.println("Index to remove is: " + indexToRemove);
+			int indexToRemove = Math.floorDiv(leafNode.getEntries().size(), 2);
+			for(Entry entry : leafNode.getEntries()) {
+			}
 			while(leafNode.getEntries().size() > indexToRemove) {
-				System.out.println(leafNode.getEntries().size());
 				newNodeData.add(leafNode.getEntries().get(indexToRemove));
 				leafNode.getEntries().remove(indexToRemove);
 			}
