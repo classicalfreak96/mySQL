@@ -29,6 +29,10 @@ public class LeafNode implements Node {
 	public InnerNode getParent() {
 		return this.parent;
 	}
+	
+	public int getParentIndex() {
+		return this.parentIndex;
+	}
 
 	public boolean isLeafNode() {
 		return true;
@@ -72,7 +76,7 @@ public class LeafNode implements Node {
 		}
 		entries.add(counter, entry);
 		//if entry is first, update key in parent node
-		if (counter == 0 && this.parent != null) {
+		if (counter == 0 && this.parent != null && this.parentIndex != 0) {
 			this.parent.getKeys().set(this.parentIndex - 1, entry.getField());
 		}
 	}

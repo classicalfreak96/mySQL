@@ -9,5 +9,6 @@ public interface Node {
 	public boolean isLeafNode();
 	public boolean isFull();
 	public Node findMatch(Field f);
+	public void setParentIndex(int index);
 	
 }
