@@ -43,6 +43,7 @@ public class BPlusTree {
 			leafNode.insert(e);
 		} 
 		else {
+//			System.out.println("overflow");
 			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
 			Boolean added = false;
 			for (int i = 0; i < leafNode.getEntries().size(); i++) {
@@ -55,7 +56,8 @@ public class BPlusTree {
 			if (!added) {
 				leafNode.getEntries().add(e);
 			}
-			int indexToRemove = Math.floorDiv(leafNode.getEntries().size(), 2) + 1;
+			int indexToRemove = Math.floorDiv(leafNode.getEntries().size() + 1, 2);
+			System.out.println("index to remove is: " + indexToRemove);
 			while (leafNode.getEntries().size() > indexToRemove) {
 				newNodeData.add(leafNode.getEntries().get(indexToRemove));
 				leafNode.getEntries().remove(indexToRemove);

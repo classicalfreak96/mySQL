@@ -63,6 +63,7 @@ public class BPlusTreeTest {
 		
 		//block added by Harrison
 		System.out.println("new root is: " + k.get(0).toString());
+		//insert 12
 //		assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(9)));
 //		LeafNode l = (LeafNode)c.get(0);
 //		LeafNode r = (LeafNode)c.get(1);
@@ -288,6 +289,79 @@ public class BPlusTreeTest {
 		
 		//verify root properties
 				Node root = bt.getRoot();
+				
+				//following block inserted by Harrison
+//				//insert 12 
+////				LeafNode lf = (LeafNode) root;
+////				assertTrue(lf.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(lf.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(9)));
+////				assertTrue(lf.getEntries().get(2).getField().compare(RelationalOperator.EQ, new IntField(12)));
+//				//insert 7
+//				InnerNode in = (InnerNode) root;
+//				ArrayList<Field> k = in.getKeys();
+//				ArrayList<Node> c = in.getChildren();
+//				LeafNode c0 = (LeafNode)c.get(0);
+//				LeafNode c1 = (LeafNode)c.get(1);
+////				System.out.println("key is: " + k.get(0).toString());
+////				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c0.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(c0.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c1.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+////				assertTrue(c1.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(12)));
+//				//insert 2
+////				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c0.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(2)));
+////				assertTrue(c0.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(c0.getEntries().get(2).getField().compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c1.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+////				assertTrue(c1.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(12)));
+//				//insert 6
+//				LeafNode c2 = (LeafNode)c.get(2);
+////				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c0.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(2)));
+////				assertTrue(c0.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(c1.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+////				assertTrue(c1.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c2.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+////				assertTrue(c2.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(12)));
+//				//insert 1
+////				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c0.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(1)));
+////				assertTrue(c0.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(2)));
+////				assertTrue(c0.getEntries().get(2).getField().compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(c1.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+////				assertTrue(c1.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c2.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+////				assertTrue(c2.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(12)));
+//				//insert 3
+//				LeafNode c3 = (LeafNode)c.get(3);
+////				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(2)));
+////				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(k.get(2).compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c0.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(1)));
+////				assertTrue(c0.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(2)));
+////				assertTrue(c1.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(3)));
+////				assertTrue(c1.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+////				assertTrue(c2.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+////				assertTrue(c2.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+////				assertTrue(c3.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+////				assertTrue(c3.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(12)));
+//				//insert 10
+//				assertTrue(k.get(0).compare(RelationalOperator.EQ, new IntField(2)));
+//				assertTrue(k.get(1).compare(RelationalOperator.EQ, new IntField(4)));
+//				assertTrue(k.get(2).compare(RelationalOperator.EQ, new IntField(7)));
+//				assertTrue(c0.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(1)));
+//				assertTrue(c0.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(2)));
+//				assertTrue(c1.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(3)));
+//				assertTrue(c1.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(4)));
+//				assertTrue(c2.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(6)));
+//				assertTrue(c2.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(7)));
+//				assertTrue(c3.getEntries().get(0).getField().compare(RelationalOperator.EQ, new IntField(9)));
+//				assertTrue(c3.getEntries().get(1).getField().compare(RelationalOperator.EQ, new IntField(10)));
+//				assertTrue(c3.getEntries().get(2).getField().compare(RelationalOperator.EQ, new IntField(12)));
+				
 
 				assertTrue(root.isLeafNode() == false);
 
