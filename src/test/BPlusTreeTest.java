@@ -17,23 +17,23 @@ import hw3.Node;
 
 public class BPlusTreeTest {
 
-//	@Test
-//	public void testSimpleInsert() {
-//		BPlusTree bt = new BPlusTree(3, 2);
-//		bt.insert(new Entry(new IntField(9), 0));
-//		bt.insert(new Entry(new IntField(4), 1));
-//		assertTrue(bt.getRoot().isLeafNode());
-//
-//		LeafNode l = (LeafNode)bt.getRoot();
-//
-//		assertTrue(l.getEntries().get(0).getField().equals(new IntField(4)));
-//		assertTrue(l.getEntries().get(1).getField().equals(new IntField(9)));
-//
-//		assertTrue(l.getEntries().get(0).getPage() == 1);
-//		assertTrue(l.getEntries().get(1).getPage() == 0);
-//
-//
-//	}
+	@Test
+	public void testSimpleInsert() {
+		BPlusTree bt = new BPlusTree(3, 2);
+		bt.insert(new Entry(new IntField(9), 0));
+		bt.insert(new Entry(new IntField(4), 1));
+		assertTrue(bt.getRoot().isLeafNode());
+
+		LeafNode l = (LeafNode)bt.getRoot();
+
+		assertTrue(l.getEntries().get(0).getField().equals(new IntField(4)));
+		assertTrue(l.getEntries().get(1).getField().equals(new IntField(9)));
+
+		assertTrue(l.getEntries().get(0).getPage() == 1);
+		assertTrue(l.getEntries().get(1).getPage() == 0);
+
+
+	}
 
 	@Test
 	public void testComplexInsert() {

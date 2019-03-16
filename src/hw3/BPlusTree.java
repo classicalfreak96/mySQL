@@ -35,11 +35,21 @@ public class BPlusTree {
     
     public void insert(Entry e) {
     	Field field = e.getField();
-    	LeafNode leafNode = this.searchLeafNode(field);
-    	if (!leafNode.isFull()) {
-    		leafNode.insert(e);
-    	}
-    	else {
+    	Node node = this.searchLeafNode(field);
+//    	Node leafNode = this.searchLeafNode(field);
+//    	if (!node.isFull()) {
+//    		((LeafNode) node).insert(e);
+//    	}
+//    	else {
+    	while (node.isFull()) {
+    		LeafNode leafNode = (LeafNode) node;
+//    		if (node.isLeafNode()) {
+//    			LeafNode leafNode = (LeafNode) node;
+//    		}
+//    		else {
+//    			InnerNode innerNode = (InnerNode) node;
+//    		}
+    		//split leaf node into 2 leaf nodes
 			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
 			Boolean added = false;
 			for(int i = 0; i < leafNode.getEntries().size(); i++) {
@@ -54,14 +64,14 @@ public class BPlusTree {
 				}
 			}
 			int indexToRemove = Math.floorDiv(leafNode.getEntries().size(), 2);
-			for(Entry entry : leafNode.getEntries()) {
-			}
 			while(leafNode.getEntries().size() > indexToRemove) {
 				newNodeData.add(leafNode.getEntries().get(indexToRemove));
 				leafNode.getEntries().remove(indexToRemove);
 			}
 			LeafNode splitLeafNode = new LeafNode(this.pLeaf);
 			splitLeafNode.setEntries(newNodeData);
+			
+			//if the leaf node being split is the root
     		if (leafNode.getParent() == null) {
     			InnerNode newRoot = new InnerNode(this.pInner);
     			ArrayList<Field> keys = new ArrayList<Field>();
@@ -78,6 +88,7 @@ public class BPlusTree {
     			this.root = newRoot;
     		}
     	}
+    	((LeafNode) node).insert(e);
     }
     
     public void delete(Entry e) {
