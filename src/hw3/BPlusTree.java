@@ -40,7 +40,6 @@ public class BPlusTree {
     		leafNode.insert(e);
     	}
     	else {
-//    		ArrayList<Entry> sortedList = new ArrayList<Entry>(leafNode.getEntries());
 			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
 			Boolean added = false;
 			for(int i = 0; i < leafNode.getEntries().size(); i++) {
@@ -72,6 +71,10 @@ public class BPlusTree {
     			children.add(splitLeafNode);
     			newRoot.setKeys(keys);
     			newRoot.setChildren(children);
+    			leafNode.setParent(newRoot);
+    			leafNode.setParentIndex(0);
+    			splitLeafNode.setParent(newRoot);
+    			splitLeafNode.setParentIndex(1);
     			this.root = newRoot;
     		}
     	}

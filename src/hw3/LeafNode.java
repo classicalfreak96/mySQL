@@ -55,41 +55,25 @@ public class LeafNode implements Node {
 	}
 
 	public void insert(Entry entry) {
-		if (this.getEntries().size() == 0) {
+		//only happens if it is very first insertion (in root)
+		if (this.getEntries().size() == 0) { 
 			entries.add(entry);
 			return;
 		}
+		//if it is greater than last entry, tag onto end (handles out of bounds exception)
 		if (entry.getField().compare(RelationalOperator.GTE, entries.get(entries.size() - 1).getField())) {
 			entries.add(entry);
 			return;
 		}
+		//else, find where the entry belongs
 		int counter = 0;
 		while (!(entry.getField().compare(RelationalOperator.LT, entries.get(counter).getField()))) {
 			counter++;
 		}
 		entries.add(counter, entry);
-	}
-
-	public void splitNode(Entry entry) {
-		LeafNode newLeafNode = new LeafNode(degree);
-		ArrayList<Entry> allEntries = new ArrayList<Entry>(this.entries);
-		boolean added = false;
-		for (int i = 0; i < allEntries.size(); i++) {
-			if (entry.getField().compare(RelationalOperator.LTE, allEntries.get(i).getField())) {
-				allEntries.add(i, entry);
-				added = true;
-			}
-		}
-		if (!added) {
-			allEntries.add(entry);
-		}
-		int removeIndex = Math.floorDiv(allEntries.size(), 2);
-		while (this.entries.size() <= removeIndex) {
-			newLeafNode.entries.add(this.entries.get(removeIndex));
-			this.entries.remove(removeIndex);
-		}
-		if (this.parent == null) {
-
+		//if entry is first, update key in parent node
+		if (counter == 0 && this.parent != null) {
+			this.parent.getKeys().set(this.parentIndex - 1, entry.getField());
 		}
 	}
 
