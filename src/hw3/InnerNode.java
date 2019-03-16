@@ -10,9 +10,13 @@ public class InnerNode implements Node {
 	private int degree; //number of children of the node
 	private ArrayList<Field> keys;
 	private ArrayList<Node> children;
+	private InnerNode parent;
+	private int parentIndex;
 	
 	public InnerNode(int degree) {
 		this.degree = degree;
+		this.children = new ArrayList<Node>();
+		this.parent = null;
 	}
 	
 	public ArrayList<Field> getKeys() {
@@ -25,6 +29,26 @@ public class InnerNode implements Node {
 
 	public int getDegree() {
 		return degree;
+	}
+	
+	public InnerNode getParent() {
+		return parent;
+	}
+	
+	public void setParent(InnerNode parent) {
+		this.parent = parent;
+	}
+	
+	public void setChildren(ArrayList<Node> children) {
+		this.children = children;
+	}
+	
+	public void setKeys(ArrayList<Field> keys) {
+		this.keys = keys;
+	}
+	
+	public void setParentIndex(int index) {
+		this.parentIndex = index;
 	}
 	
 	public boolean isLeafNode() {
@@ -45,10 +69,10 @@ public class InnerNode implements Node {
 		if(f.compare(RelationalOperator.LT, keys.get(counter))) {
 			return children.get(counter);
 		}
-		if(f.compare(RelationalOperator.GT, keys.get(keys.size() - 1))) {
+		if(f.compare(RelationalOperator.GTE, keys.get(keys.size() - 1))) {
 			return children.get(keys.size());
 		}
-		while (!(f.compare(RelationalOperator.GT, keys.get(counter)) && f.compare(RelationalOperator.LT, keys.get(counter + 1)))) {
+		while (!(f.compare(RelationalOperator.GTE, keys.get(counter)) && f.compare(RelationalOperator.LT, keys.get(counter + 1)))) {
 			counter ++;
 		}
 		return children.get(counter + 1);
