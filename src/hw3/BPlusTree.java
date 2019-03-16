@@ -39,38 +39,42 @@ public class BPlusTree {
     	if (!leafNode.isFull()) {
     		leafNode.insert(e);
     	}
-//    	else {
-//    		if (leafNode.getParent() == null) {
-//    			ArrayList<Entry> sortedList = new ArrayList<Entry>(leafNode.getEntries());
-//    			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
-//    			for(int i = 0; i < sortedList.size(); i++) {
-//    				if (i == 0 && e.getField().compare(RelationalOperator.LT, sortedList.get(i).getField())) {
-//    					sortedList.add(i, e);
-//    					break;
-//    				}
-//    				else {
-//    					if(e.getField().compare(RelationalOperator.GT, sortedList.get(i).getField())) {
-//    						sortedList.add(i, e);
-//    						break;
-//    					}
-//    				}
-//    			}
-//    			int indexToRemove = Math.floorDiv(newNodeData.size(), 2);
-//    			while(leafNode.getEntries().size() >= indexToRemove) {
-//    				newNodeData.add(leafNode.getEntries().get(indexToRemove));
-//    				leafNode.getEntries().remove(indexToRemove);
-//    			}
-//    			InnerNode newRoot = new InnerNode(this.pInner);
-//    			ArrayList<Node> newChildren = new ArrayList<Node>();
-//    			ArrayList<Field> newKeys = new ArrayList<Field>();
-////    			LeafNode newLeafNode = new LeafNode(this.pLeaf);
-////    			leafNode.setParent(newRoot);
-////    			newLeafNode.setEntries(newNodeData);
-////    			newLeafNode.setParent(newRoot);
-//    			
-//    			
-//    		}
-//    	}
+    	else {
+    		ArrayList<Entry> sortedList = new ArrayList<Entry>(leafNode.getEntries());
+			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
+			Boolean added = false;
+			for(int i = 0; i < sortedList.size(); i++) {
+				if (e.getField().compare(RelationalOperator.LTE, sortedList.get(i).getField())) {
+					sortedList.add(i, e);
+					added = true;
+					break;
+				}
+				if (!added) {
+					sortedList.add(e);
+					break;
+				}
+			}
+			int indexToRemove = Math.floorDiv(sortedList.size(), 2);
+			System.out.println("Index to remove is: " + indexToRemove);
+			while(leafNode.getEntries().size() > indexToRemove) {
+				System.out.println(leafNode.getEntries().size());
+				newNodeData.add(leafNode.getEntries().get(indexToRemove));
+				leafNode.getEntries().remove(indexToRemove);
+			}
+			LeafNode splitLeafNode = new LeafNode(this.pLeaf);
+			splitLeafNode.setEntries(newNodeData);
+    		if (leafNode.getParent() == null) {
+    			InnerNode newRoot = new InnerNode(this.pInner);
+    			ArrayList<Field> keys = new ArrayList<Field>();
+    			ArrayList<Node> children = new ArrayList<Node>();
+    			keys.add(splitLeafNode.getEntries().get(0).getField());
+    			children.add(leafNode);
+    			children.add(splitLeafNode);
+    			newRoot.setKeys(keys);
+    			newRoot.setChildren(children);
+    			this.root = newRoot;
+    		}
+    	}
     }
     
     public void delete(Entry e) {
