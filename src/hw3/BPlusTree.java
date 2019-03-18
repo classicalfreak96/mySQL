@@ -10,11 +10,14 @@ public class BPlusTree {
 	private Node root;
 	private int pInner;
 	private int pLeaf;
+	private ArrayList<LeafNode> leafNodes;
 
 	public BPlusTree(int pInner, int pLeaf) {
 		this.pInner = pInner;
 		this.pLeaf = pLeaf;
 		this.root = new LeafNode(this.pLeaf);
+		this.leafNodes = new ArrayList<LeafNode>();
+		leafNodes.add((LeafNode) this.root);
 	}
 
 	/*
@@ -42,7 +45,9 @@ public class BPlusTree {
 		//otherwise prepare insertion. places new entry into correct place in existing entries and then splits entries 
 		else {
 			ArrayList<Entry> newNodeData = new ArrayList<Entry>();
-			Boolean added = false;
+			boolean added = false;
+			
+			// insert into appropriate position in the leaf node
 			for (int i = 0; i < leafNode.getEntries().size(); i++) {
 				if (e.getField().compare(RelationalOperator.LTE, leafNode.getEntries().get(i).getField())) {
 					leafNode.getEntries().add(i, e);
@@ -50,18 +55,24 @@ public class BPlusTree {
 					break;
 				}
 			}
+			// insert into appropriate position in the leaf node
 			if (!added) {
 				leafNode.getEntries().add(e);
 			}
+			// split the leaf node
 			int indexToRemove = Math.floorDiv(leafNode.getEntries().size() + 1, 2);
 			while (leafNode.getEntries().size() > indexToRemove) {
 				newNodeData.add(leafNode.getEntries().get(indexToRemove));
 				leafNode.getEntries().remove(indexToRemove);
 			}
+			// splitLeafNode is the right half
+			// leafNode is the left half
 			LeafNode splitLeafNode = new LeafNode(this.pLeaf);
 			splitLeafNode.setEntries(newNodeData); // at this point we've split the nodes: leafNode and splitLeafNode
+			this.leafNodes.add(splitLeafNode);
+			System.out.println("TOTAL CHILDREN " + this.leafNodes.size());
 			
-			// if no parent, create new root from leaf
+			// case: leafNode was originally the root, but inserting caused overflow, so need to create a new root from leaf
 			if (leafNode.getParent() == null) {
 				InnerNode newRoot = new InnerNode(this.pInner);
 				ArrayList<Node> children = new ArrayList<Node>();
@@ -148,7 +159,78 @@ public class BPlusTree {
 	}
 
 	public void delete(Entry e) {
-		// your code here
+		Field field = e.getField();
+		LeafNode leafNode = this.search(field);
+		// if the actual field exists
+		if(leafNode != null) {
+			ArrayList<Entry> entries = leafNode.getEntries();
+			InnerNode parent = leafNode.getParent();
+			boolean removed = leafNode.removeEntry(e);
+			int leafThreshold = (int) Math.ceil(this.pLeaf/2.0);
+			System.out.println("ENTRY: " + field.toString() + " SIZE after remove " + entries.size());
+			
+			// Case: leaf empty
+			if(entries.isEmpty()) {
+				// TODO update leafNodes (remove the empty leaf node)
+				
+				// remove the child from the parent node
+				boolean r = parent.getChildren().remove(leafNode);
+				// update the keys
+				parent.updateKeys();
+				return;
+			}
+			// Case: leaf < ceil(p/2)
+			else if(entries.size() < leafThreshold) {
+				// borrow left, merge left, borrow right, merge right
+				LeafNode leftSibling = this.getLeftSibling(leafNode);
+				LeafNode rightSibling = this.getRightSibling(leafNode);
+				if(leftSibling != null) {
+					// borrow left
+					boolean borrowed = leafNode.borrowLeft(leftSibling);
+					if(!borrowed) {
+						// merge left
+						boolean merged = leafNode.mergeLeft(leftSibling);
+						if(merged) {
+							parent.getChildren().remove(leafNode);
+						}
+					}
+					parent.updateKeys();
+					leftSibling.getParent().updateKeys();
+				} else if(rightSibling != null) {
+					// borrow right
+					boolean borrowed = leafNode.borrowRight(rightSibling);
+					System.out.println("RIGHT " + borrowed);
+					if(!borrowed) {
+						// merge right
+						boolean merged = leafNode.mergeRight(rightSibling);
+						if(merged) {
+							System.out.println("MERGE RIGHT");
+							parent.getChildren().remove(leafNode);
+						}
+					}
+					parent.updateKeys();
+					rightSibling.getParent().updateKeys();
+				}
+			} else {
+				parent.updateKeys();
+			}
+		}
+	}
+	
+	public LeafNode getLeftSibling(LeafNode lf) {
+		int index = this.leafNodes.indexOf(lf) - 1;
+		if(index >= 0) {
+			return this.leafNodes.get(index);
+		}
+		return null;
+	}
+	
+	public LeafNode getRightSibling(LeafNode lf) {
+		int index = this.leafNodes.indexOf(lf) + 1;
+		if(index < this.leafNodes.size()) {
+			return this.leafNodes.get(index);
+		}
+		return null;
 	}
 
 	public Node getRoot() {
@@ -160,9 +242,6 @@ public class BPlusTree {
 		Node accessedNode = root;
 		while (!accessedNode.isLeafNode()) {
 			accessedNode = accessedNode.findMatch(f);
-		}
-		if (((LeafNode) accessedNode).getEntries().size() == 0) {
-			return (LeafNode) accessedNode;
 		}
 		return (LeafNode) accessedNode;
 	}

@@ -82,7 +82,65 @@ public class LeafNode implements Node {
 			this.parent.updateKeys();
 		}
 	}
-
+	
+	public boolean removeEntry(Entry e) {
+		Field field = e.getField();
+		for(int i = 0; i < this.entries.size(); i++) {
+			Entry entry = this.entries.get(i);
+			if(field.equals(entry.getField())) {
+				this.entries.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean borrowLeft(LeafNode left) {
+		ArrayList<Entry> entries = left.getEntries();
+		Entry e = entries.get(entries.size()-1);
+		int threshold = (int) Math.ceil(entries.size()/2.0);
+		if(entries.size()-1 < threshold) {
+			return false;
+		}
+		this.insert(e);
+		left.removeEntry(e);
+		return true;
+	}
+	
+	public boolean borrowRight(LeafNode right) {
+		ArrayList<Entry> entries = right.getEntries();
+		int threshold = (int) Math.ceil(entries.size()/2.0);
+		if(entries.size()-1 < threshold) {
+			return false;
+		}
+		Entry e = entries.get(0);
+		this.insert(e);
+		right.removeEntry(e);
+		return true;
+	}
+	
+	public boolean mergeLeft(LeafNode left) {
+		ArrayList<Entry> entries = left.getEntries();
+		if (this.entries.size() < this.degree - entries.size()) {
+			for(Entry e : this.entries) {
+				left.insert(e);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean mergeRight(LeafNode right) {
+		ArrayList<Entry> entries = right.getEntries();
+		if (this.entries.size() < this.degree - entries.size()) {
+			for(Entry e : this.entries) {
+				right.insert(e);
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	public Node findMatch(Field f) {
 		// TODO Auto-generated method stub
 		return null;
