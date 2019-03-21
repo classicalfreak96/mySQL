@@ -361,7 +361,6 @@ public class HW3Tests {
 		InnerNode l = (InnerNode) bt.getRoot();
 
 		// 4 is max of left child, so that should be the only key, the other two should be null
-		System.out.println(l.getKeys().get(0).toString());
 		assertTrue(l.getKeys().get(0).equals(new IntField(4)));
 
 		// left and right children should be leaf nodes

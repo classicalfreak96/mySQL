@@ -75,7 +75,7 @@ public class InnerNode implements Node {
 		for (Node child: children) {
 			int size = ((LeafNode) child).getEntries().size();
 			newKeys.add(((LeafNode) child).getEntries().get(size - 1).getField());
-			System.out.println("UPDATE KEYS " + (((LeafNode) child).getEntries().get(size - 1).getField().toString()));
+//			System.out.println("UPDATE KEYS " + (((LeafNode) child).getEntries().get(size - 1).getField().toString()));
 		}
 		newKeys.remove(newKeys.size() - 1);
 		this.keys = newKeys;

@@ -109,7 +109,7 @@ public class LeafNode implements Node {
 	
 	public boolean borrowRight(LeafNode right) {
 		ArrayList<Entry> entries = right.getEntries();
-		int threshold = (int) Math.ceil(entries.size()/2.0);
+		int threshold = (int) Math.ceil(this.degree/2.0);
 		if(entries.size()-1 < threshold) {
 			return false;
 		}
@@ -121,7 +121,7 @@ public class LeafNode implements Node {
 	
 	public boolean mergeLeft(LeafNode left) {
 		ArrayList<Entry> entries = left.getEntries();
-		if (this.entries.size() < this.degree - entries.size()) {
+		if (this.entries.size() <= this.degree - entries.size()) {
 			for(Entry e : this.entries) {
 				left.insert(e);
 			}
@@ -132,10 +132,12 @@ public class LeafNode implements Node {
 	
 	public boolean mergeRight(LeafNode right) {
 		ArrayList<Entry> entries = right.getEntries();
-		if (this.entries.size() < this.degree - entries.size()) {
+		if (this.entries.size() <= this.degree - entries.size()) {
 			for(Entry e : this.entries) {
+				System.out.println("MERGE RIGHT ENTRY: " + e.getField().toString());
 				right.insert(e);
 			}
+			System.out.println("RIGHT: " + entries.get(0).getField().toString());
 			return true;
 		}
 		return false;

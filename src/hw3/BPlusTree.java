@@ -69,7 +69,9 @@ public class BPlusTree {
 			// leafNode is the left half
 			LeafNode splitLeafNode = new LeafNode(this.pLeaf);
 			splitLeafNode.setEntries(newNodeData); // at this point we've split the nodes: leafNode and splitLeafNode
-			this.leafNodes.add(splitLeafNode);
+
+			// this.leafNodes.add(splitLeafNode);
+			this.updateLeafNodes(splitLeafNode);
 			System.out.println("TOTAL CHILDREN " + this.leafNodes.size());
 			
 			// case: leafNode was originally the root, but inserting caused overflow, so need to create a new root from leaf
@@ -164,8 +166,19 @@ public class BPlusTree {
 		// if the actual field exists
 		if(leafNode != null) {
 			ArrayList<Entry> entries = leafNode.getEntries();
+			ArrayList<Entry> entries2 = this.leafNodes.get(0).getEntries();
+			// ============= DEBUGGING =============
+			for(Entry temp : entries2) {
+				System.out.print(temp.getField().toString() + ", ");
+			}
+			
 			InnerNode parent = leafNode.getParent();
 			boolean removed = leafNode.removeEntry(e);
+			if(!removed) {
+				// entry does not exist, do nothing
+				return;
+			}
+			
 			int leafThreshold = (int) Math.ceil(this.pLeaf/2.0);
 			System.out.println("ENTRY: " + field.toString() + " SIZE after remove " + entries.size());
 			
@@ -181,7 +194,6 @@ public class BPlusTree {
 			}
 			// Case: leaf < ceil(p/2)
 			else if(entries.size() < leafThreshold) {
-				// borrow left, merge left, borrow right, merge right
 				LeafNode leftSibling = this.getLeftSibling(leafNode);
 				LeafNode rightSibling = this.getRightSibling(leafNode);
 				if(leftSibling != null) {
@@ -192,6 +204,7 @@ public class BPlusTree {
 						boolean merged = leafNode.mergeLeft(leftSibling);
 						if(merged) {
 							parent.getChildren().remove(leafNode);
+							// TODO update list of children here
 						}
 					}
 					parent.updateKeys();
@@ -199,13 +212,15 @@ public class BPlusTree {
 				} else if(rightSibling != null) {
 					// borrow right
 					boolean borrowed = leafNode.borrowRight(rightSibling);
-					System.out.println("RIGHT " + borrowed);
 					if(!borrowed) {
 						// merge right
+						System.out.println("RIGHT SIBLING BEFORE: " + rightSibling.getEntries().get(0).getField().toString());
 						boolean merged = leafNode.mergeRight(rightSibling);
 						if(merged) {
-							System.out.println("MERGE RIGHT");
+							System.out.println("RIGHT SIBLING AFTER: " + rightSibling.getEntries().get(0).getField().toString());
+							System.out.println("MERGE RIGHT SUCCESSFUL");
 							parent.getChildren().remove(leafNode);
+							// TODO update list of children here
 						}
 					}
 					parent.updateKeys();
@@ -227,10 +242,37 @@ public class BPlusTree {
 	
 	public LeafNode getRightSibling(LeafNode lf) {
 		int index = this.leafNodes.indexOf(lf) + 1;
+		System.out.println("RIGHT SIBLING INDEX " + index);
 		if(index < this.leafNodes.size()) {
 			return this.leafNodes.get(index);
 		}
 		return null;
+	}
+	
+	public void updateLeafNodes(LeafNode lf) {
+		if(this.leafNodes.isEmpty()) {
+			this.leafNodes.add(lf);
+			return;
+		}
+		int index = this.leafNodes.size()-1;
+		// if it is greater than last entry, tag onto end (handles out of bounds exception)
+		LeafNode end = this.leafNodes.get(index);
+		Entry lastEntry = end.getEntries().get(end.getEntries().size()-1);
+		if(lf.getEntries().get(0).getField().compare(RelationalOperator.GTE, lastEntry.getField())) {
+			this.leafNodes.add(lf);
+			return;
+		}
+		//else, find where the entry belongs
+		index--;
+		Entry e = lf.getEntries().get(0);
+		for(; index >= 0; index--) {
+			ArrayList<Entry> lfEntries = this.leafNodes.get(index).getEntries();
+			Entry compareTo = lfEntries.get(lfEntries.size()-1);
+			if(e.getField().compare(RelationalOperator.GTE, compareTo.getField())) {
+				break;
+			}
+		}
+		this.leafNodes.add(index+1, lf);
 	}
 
 	public Node getRoot() {
