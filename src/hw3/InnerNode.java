@@ -67,10 +67,14 @@ public class InnerNode implements Node {
 			return false;
 		}
 	}
+	
+	public int numberOfChildren() {
+		return this.children.size();
+	}
 
 	//updates all keys based on new children insertions or updated children values 
 	public void updateKeys() {
-		System.out.println("================ UPDATE KEYS ================");
+//		System.out.println("================ UPDATE KEYS ================");
 		ArrayList<Field> newKeys = new ArrayList<Field>();
 		for (Node child: children) {
 			int size = ((LeafNode) child).getEntries().size();

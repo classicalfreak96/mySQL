@@ -70,9 +70,7 @@ public class BPlusTree {
 			LeafNode splitLeafNode = new LeafNode(this.pLeaf);
 			splitLeafNode.setEntries(newNodeData); // at this point we've split the nodes: leafNode and splitLeafNode
 
-			// this.leafNodes.add(splitLeafNode);
 			this.updateLeafNodes(splitLeafNode);
-			System.out.println("TOTAL CHILDREN " + this.leafNodes.size());
 			
 			// case: leafNode was originally the root, but inserting caused overflow, so need to create a new root from leaf
 			if (leafNode.getParent() == null) {
@@ -109,7 +107,6 @@ public class BPlusTree {
 				ArrayList<Field> newKeys = new ArrayList<Field>();
 				ArrayList<Node> newChildren = new ArrayList<Node>();
 				for (int i = indexToAccess; i < parentNode.getKeys().size(); i++) {
-					System.out.println("index to access: " + indexToAccess);
 					newKeys.add(parentNode.getKeys().get(indexToAccess));
 					newChildren.add(parentNode.getChildren().get(indexToAccess));
 					parentNode.getKeys().remove(indexToAccess);
@@ -166,13 +163,18 @@ public class BPlusTree {
 		// if the actual field exists
 		if(leafNode != null) {
 			ArrayList<Entry> entries = leafNode.getEntries();
-			ArrayList<Entry> entries2 = this.leafNodes.get(0).getEntries();
 			// ============= DEBUGGING =============
-			for(Entry temp : entries2) {
+			for(Entry temp : entries) {
 				System.out.print(temp.getField().toString() + ", ");
 			}
 			
+			// FOR HARRISON:
+			// testPushTrough deletes entry 12
+			// when you search for the LeafNode, it returns the correct leaf
+			// when you call .getParent(), it is returning the parent's left sibling, not the actual parent
+			// ============= ISSUE HERE: .getParent() =============
 			InnerNode parent = leafNode.getParent();
+			System.out.println("yooooo " + parent.getKeys().get(0).toString());
 			boolean removed = leafNode.removeEntry(e);
 			if(!removed) {
 				// entry does not exist, do nothing
@@ -182,17 +184,18 @@ public class BPlusTree {
 			int leafThreshold = (int) Math.ceil(this.pLeaf/2.0);
 			System.out.println("ENTRY: " + field.toString() + " SIZE after remove " + entries.size());
 			
-			// Case: leaf empty
+			// Case: leaf empty (would only happen if pLeaf=2)
 			if(entries.isEmpty()) {
-				// TODO update leafNodes (remove the empty leaf node)
-				
+				// update list of children (remove the empty leaf node)
+				this.leafNodes.remove(leafNode);
 				// remove the child from the parent node
+				System.out.println("size before: " + parent.numberOfChildren());
 				boolean r = parent.getChildren().remove(leafNode);
+				System.out.println("size now: " + parent.numberOfChildren() + " " + r);
 				// update the keys
 				parent.updateKeys();
-				return;
 			}
-			// Case: leaf < ceil(p/2)
+			// Case: # leaf values < ceil(pLeaf/2)
 			else if(entries.size() < leafThreshold) {
 				LeafNode leftSibling = this.getLeftSibling(leafNode);
 				LeafNode rightSibling = this.getRightSibling(leafNode);
@@ -204,31 +207,57 @@ public class BPlusTree {
 						boolean merged = leafNode.mergeLeft(leftSibling);
 						if(merged) {
 							parent.getChildren().remove(leafNode);
-							// TODO update list of children here
+							// update list of children
+							this.leafNodes.remove(leafNode);
 						}
 					}
 					parent.updateKeys();
-					leftSibling.getParent().updateKeys();
+					// no need to update the same parent twice
+					if(!parent.equals(leftSibling.getParent())) {
+						leftSibling.getParent().updateKeys();
+					}
 				} else if(rightSibling != null) {
 					// borrow right
 					boolean borrowed = leafNode.borrowRight(rightSibling);
 					if(!borrowed) {
 						// merge right
-						System.out.println("RIGHT SIBLING BEFORE: " + rightSibling.getEntries().get(0).getField().toString());
 						boolean merged = leafNode.mergeRight(rightSibling);
 						if(merged) {
-							System.out.println("RIGHT SIBLING AFTER: " + rightSibling.getEntries().get(0).getField().toString());
-							System.out.println("MERGE RIGHT SUCCESSFUL");
 							parent.getChildren().remove(leafNode);
-							// TODO update list of children here
+							// update list of children
+							this.leafNodes.remove(leafNode);
 						}
 					}
 					parent.updateKeys();
-					rightSibling.getParent().updateKeys();
+					// no need to update the same parent twice
+					if(!parent.equals(rightSibling.getParent())) {
+						rightSibling.getParent().updateKeys();
+					}
 				}
 			} else {
 				parent.updateKeys();
 			}
+			// check that # of children under parent is valid
+			int innerThreshold = (int) Math.ceil(this.pInner/2.0);
+			// Case: parent has no children
+			//Case: # children < ceil(pInner/2)
+			if(parent.numberOfChildren() < innerThreshold) {
+				// borrow closest child (right) from left parent
+				InnerNode leftParent = this.getLeftParent(parent);
+				// TODO add a case where there is no left parent
+				// check if left parent will have enough children after a borrow
+				System.out.println("left size: " + leftParent.getChildren().size());
+				if(leftParent.numberOfChildren()-1 >= innerThreshold) {				
+					ArrayList<Node> leftChildren = leftParent.getChildren();
+					LeafNode leftBorrow = (LeafNode) leftChildren.get(leftChildren.size()-1);
+					parent.getChildren().add(0, leftBorrow);
+					leftChildren.remove(leftBorrow);
+					
+//					parent.updateKeys();
+//					leftParent.updateKeys();
+				}
+			}
+			
 		}
 	}
 	
@@ -242,11 +271,25 @@ public class BPlusTree {
 	
 	public LeafNode getRightSibling(LeafNode lf) {
 		int index = this.leafNodes.indexOf(lf) + 1;
-		System.out.println("RIGHT SIBLING INDEX " + index);
 		if(index < this.leafNodes.size()) {
 			return this.leafNodes.get(index);
 		}
 		return null;
+	}
+	
+	public InnerNode getLeftParent(InnerNode p) {
+		int i = 0;
+		// no left sibling
+		if(this.leafNodes.get(i).getParent().equals(p)) {
+			return null;
+		}
+		for(; i < this.leafNodes.size(); i++) {
+			InnerNode lfParent = this.leafNodes.get(i).getParent();
+			if(lfParent.equals(p)) {
+				break;
+			}
+		}
+		return this.leafNodes.get(i).getParent();
 	}
 	
 	public void updateLeafNodes(LeafNode lf) {
@@ -273,6 +316,15 @@ public class BPlusTree {
 			}
 		}
 		this.leafNodes.add(index+1, lf);
+	}
+	
+	public void updateAllKeys(InnerNode p) {
+		if(p.equals(this.root)) {
+			return;
+		}
+		p.updateKeys();
+		InnerNode pParent = p.getParent();
+		updateAllKeys(pParent);
 	}
 
 	public Node getRoot() {
