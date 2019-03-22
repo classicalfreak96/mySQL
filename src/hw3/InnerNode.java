@@ -84,6 +84,12 @@ public class InnerNode implements Node {
 		newKeys.remove(newKeys.size() - 1);
 		this.keys = newKeys;
 	}
+	
+	public void updateParentOfChildren() {
+		for (Node child : children) {
+			child.setParent(this);
+		}
+	}
 
 	//finds a matching children to return when looking for a field
 	public Node findMatch(Field f) {

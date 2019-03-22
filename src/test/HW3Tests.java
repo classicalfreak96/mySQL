@@ -618,10 +618,15 @@ public class HW3Tests {
 		int pInner = 3;
 		int pLeaf = 2;
 		BPlusTree bt = new BPlusTree(pInner, pLeaf);
+		System.out.println("inserting 9-------------");
 		bt.insert(new Entry(new IntField(9), 0));
+		System.out.println("inserting 4-------------");
 		bt.insert(new Entry(new IntField(4), 0));
+		System.out.println("inserting 12-------------");
 		bt.insert(new Entry(new IntField(12), 0));
+		System.out.println("inserting 7-------------");
 		bt.insert(new Entry(new IntField(7), 0));
+		System.out.println("inserting 2-------------");
 		bt.insert(new Entry(new IntField(2), 0));
 		//							[7, ]
 		// 						   /     \

@@ -74,6 +74,7 @@ public class BPlusTree {
 			
 			// case: leafNode was originally the root, but inserting caused overflow, so need to create a new root from leaf
 			if (leafNode.getParent() == null) {
+				System.out.println("splitting root");
 				InnerNode newRoot = new InnerNode(this.pInner);
 				ArrayList<Node> children = new ArrayList<Node>();
 				children.add(leafNode);
@@ -89,6 +90,7 @@ public class BPlusTree {
 			
 			// otherwise, add on to parent anyway, will check later if overflowing to split
 			else {
+				System.out.println("adding to parent anywy outside of while loop");
 				ArrayList<Node> children = new ArrayList<Node>(leafNode.getParent().getChildren());
 				splitLeafNode.setParentIndex(leafNode.getParentIndex() + 1);
 				splitLeafNode.setParent(leafNode.getParent());
@@ -132,6 +134,7 @@ public class BPlusTree {
 					rootChildren.add(splitParentNode);
 					parentNode.setParent(newRoot);
 					splitParentNode.setParent(newRoot);
+					splitParentNode.updateParentOfChildren();
 					parentNode.setParentIndex(0);
 					splitParentNode.setParentIndex(1);
 					newRoot.setKeys(rootKeys);
@@ -144,6 +147,7 @@ public class BPlusTree {
 					ArrayList<Node> children = new ArrayList<Node>(parentNode.getParent().getChildren());
 					splitParentNode.setParentIndex(parentNode.getParentIndex() + 1);
 					splitParentNode.setParent(parentNode.getParent());
+					splitParentNode.updateParentOfChildren();
 					parentNode.getParent().getKeys().add(splitParentNode.getParentIndex(),
 							parentNode.getKeys().get(indexToMoveUp));
 					parentNode.getKeys().remove(indexToMoveUp);

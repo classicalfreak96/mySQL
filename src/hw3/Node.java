@@ -10,5 +10,7 @@ public interface Node {
 	public boolean isFull();
 	public Node findMatch(Field f);
 	public void setParentIndex(int index);
+	public void setParent(InnerNode node);
+	public InnerNode getParent();
 	
 }
