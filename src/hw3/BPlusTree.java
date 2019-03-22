@@ -174,7 +174,7 @@ public class BPlusTree {
 			// when you call .getParent(), it is returning the parent's left sibling, not the actual parent
 			// ============= ISSUE HERE: .getParent() =============
 			InnerNode parent = leafNode.getParent();
-			System.out.println("yooooo " + parent.getKeys().get(0).toString());
+			System.out.println("PARENT FIRST KEY " + parent.getKeys().get(0).toString());
 			boolean removed = leafNode.removeEntry(e);
 			if(!removed) {
 				// entry does not exist, do nothing
