@@ -134,10 +134,8 @@ public class LeafNode implements Node {
 		ArrayList<Entry> entries = right.getEntries();
 		if (this.entries.size() <= this.degree - entries.size()) {
 			for(Entry e : this.entries) {
-				System.out.println("MERGE RIGHT ENTRY: " + e.getField().toString());
 				right.insert(e);
 			}
-			System.out.println("RIGHT: " + entries.get(0).getField().toString());
 			return true;
 		}
 		return false;

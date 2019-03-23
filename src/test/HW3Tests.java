@@ -618,15 +618,10 @@ public class HW3Tests {
 		int pInner = 3;
 		int pLeaf = 2;
 		BPlusTree bt = new BPlusTree(pInner, pLeaf);
-		System.out.println("inserting 9-------------");
 		bt.insert(new Entry(new IntField(9), 0));
-		System.out.println("inserting 4-------------");
 		bt.insert(new Entry(new IntField(4), 0));
-		System.out.println("inserting 12-------------");
 		bt.insert(new Entry(new IntField(12), 0));
-		System.out.println("inserting 7-------------");
 		bt.insert(new Entry(new IntField(7), 0));
-		System.out.println("inserting 2-------------");
 		bt.insert(new Entry(new IntField(2), 0));
 		//							[7, ]
 		// 						   /     \
@@ -700,6 +695,7 @@ public class HW3Tests {
 		//           [1,2]       [3,4]     [6,7]    [9, ]
 		assertTrue(bt.getRoot().isLeafNode() == false);
 		InnerNode root = (InnerNode)bt.getRoot();
+		System.out.println("ROOT: " + root.getKeys().get(0).toString());
 		assertTrue(root.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(4)));
 		
 		ArrayList<Node> root_c = root.getChildren();
