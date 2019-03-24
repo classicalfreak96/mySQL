@@ -1,6 +1,7 @@
 package hw3;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import hw1.Field;
 import hw1.RelationalOperator;
@@ -74,19 +75,39 @@ public class InnerNode implements Node {
 
 	//updates all keys based on new children insertions or updated children values 
 	public void updateKeys() {
-//		System.out.println("================ UPDATE KEYS ================");
 		ArrayList<Field> newKeys = new ArrayList<Field>();
-		for (Node child: children) {
+		Iterator<Node> itr = this.children.iterator();
+		while(itr.hasNext()) {
+			Node child = itr.next();
 			if(child.isLeafNode()) {
 				int size = ((LeafNode) child).getEntries().size();
-				newKeys.add(((LeafNode) child).getEntries().get(size - 1).getField());
+				if(size == 0) {
+					itr.remove();
+				} else {
+					newKeys.add(((LeafNode) child).getEntries().get(size - 1).getField());
+				}
 			} else {
 				int size = ((InnerNode) child).getKeys().size();
-				newKeys.add(((InnerNode) child).getKeys().get(size - 1));
-//				System.out.println("UPDATE KEYS " + (((InnerNode) child).getKeys().get(size - 1).toString()));
+				if(size == 0) {
+					itr.remove();
+				} else {
+					newKeys.add(((InnerNode) child).getKeys().get(size - 1));
+				}
+				
 			}
-//			System.out.println("UPDATE KEYS " + (((LeafNode) child).getEntries().get(size - 1).getField().toString()));
 		}
+		
+//		for (Node child: children) {
+//			if(child.isLeafNode()) {
+//				int size = ((LeafNode) child).getEntries().size();
+//				newKeys.add(((LeafNode) child).getEntries().get(size - 1).getField());
+//				System.out.println("UPDATE KEYS LEAF " + (((LeafNode) child).getEntries().get(size - 1).getField().toString()));
+//			} else {
+//				int size = ((InnerNode) child).getKeys().size();
+//				newKeys.add(((InnerNode) child).getKeys().get(size - 1));
+//				System.out.println("UPDATE KEYS INNER " + (((InnerNode) child).getKeys().get(size - 1).toString()));
+//			}
+//		}
 		newKeys.remove(newKeys.size() - 1);
 		
 		this.keys = newKeys;
@@ -117,7 +138,6 @@ public class InnerNode implements Node {
 	public boolean borrowLeft(InnerNode leftSibling) {
 		// BORROW LEFT parent's child
 		int innerThreshold = (int) Math.ceil(this.degree/2.0);
-		System.out.println(innerThreshold);
 		ArrayList<Node> leftChildren = leftSibling.getChildren();
 		if(leftChildren.size()-1 < innerThreshold) {
 			return false;
@@ -141,9 +161,30 @@ public class InnerNode implements Node {
 		return true;
 	}
 	
-	public void mergeLeft(InnerNode leftSibling) {
+	public boolean mergeLeft(InnerNode leftSibling) {
 		ArrayList<Node> leftChildren = leftSibling.getChildren();
-		
+		if(leftChildren.size()+this.children.size() > this.degree) {
+			return false;
+		}
+		for(Node child : this.children) {
+			leftChildren.add(child);
+			child.setParent(leftSibling);
+		}
+		this.children.clear();
+		return true;
+	}
+	
+	public boolean mergeRight(InnerNode rightSibling) {
+		ArrayList<Node> rightChildren = rightSibling.getChildren();
+		if(rightChildren.size()+this.children.size() > this.degree) {
+			return false;
+		}
+		for(Node child : this.children) {
+			rightChildren.add(0, child);
+			child.setParent(rightSibling);
+		}
+		this.children.clear();
+		return true;
 	}
 
 }

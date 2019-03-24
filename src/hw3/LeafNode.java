@@ -98,7 +98,7 @@ public class LeafNode implements Node {
 	public boolean borrowLeft(LeafNode left) {
 		ArrayList<Entry> entries = left.getEntries();
 		Entry e = entries.get(entries.size()-1);
-		int threshold = (int) Math.ceil(entries.size()/2.0);
+		int threshold = (int) Math.ceil(this.degree/2.0);
 		if(entries.size()-1 < threshold) {
 			return false;
 		}
@@ -125,6 +125,7 @@ public class LeafNode implements Node {
 			for(Entry e : this.entries) {
 				left.insert(e);
 			}
+			this.parent.getChildren().remove(this);
 			return true;
 		}
 		return false;
@@ -136,6 +137,7 @@ public class LeafNode implements Node {
 			for(Entry e : this.entries) {
 				right.insert(e);
 			}
+			this.parent.getChildren().remove(this);
 			return true;
 		}
 		return false;

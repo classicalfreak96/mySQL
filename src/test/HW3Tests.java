@@ -695,7 +695,6 @@ public class HW3Tests {
 		//           [1,2]       [3,4]     [6,7]    [9, ]
 		assertTrue(bt.getRoot().isLeafNode() == false);
 		InnerNode root = (InnerNode)bt.getRoot();
-		System.out.println("ROOT: " + root.getKeys().get(0).toString());
 		assertTrue(root.getKeys().get(0).compare(RelationalOperator.EQ, new IntField(4)));
 		
 		ArrayList<Node> root_c = root.getChildren();
