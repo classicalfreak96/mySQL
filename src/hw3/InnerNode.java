@@ -144,6 +144,7 @@ public class InnerNode implements Node {
 		}
 		LeafNode leftBorrow = (LeafNode) leftChildren.get(leftChildren.size()-1);
 		this.children.add(0, leftBorrow);
+		leftBorrow.setParent(this);
 		leftChildren.remove(leftBorrow);
 		return true;
 	}
@@ -157,6 +158,7 @@ public class InnerNode implements Node {
 		}
 		LeafNode rightBorrow = (LeafNode) rightChildren.get(0);
 		parent.getChildren().add(parent.numberOfChildren()-1, rightBorrow);
+		rightBorrow.setParent(this);
 		rightChildren.remove(rightBorrow);
 		return true;
 	}
@@ -171,6 +173,7 @@ public class InnerNode implements Node {
 			child.setParent(leftSibling);
 		}
 		this.children.clear();
+		this.parent.getChildren().remove(this);
 		return true;
 	}
 	
@@ -184,6 +187,7 @@ public class InnerNode implements Node {
 			child.setParent(rightSibling);
 		}
 		this.children.clear();
+		this.parent.getChildren().remove(this);
 		return true;
 	}
 

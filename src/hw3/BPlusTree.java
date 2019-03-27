@@ -172,7 +172,7 @@ public class BPlusTree {
 				// entry does not exist, do nothing
 				return;
 			}
-			
+
 			int leafThreshold = (int) Math.ceil(this.pLeaf/2.0);
 			
 			// Case: leaf empty (would only happen if pLeaf=2)
@@ -182,7 +182,9 @@ public class BPlusTree {
 				// remove the child from the parent node
 				boolean r = parent.getChildren().remove(leafNode);
 				// update the keys
-				parent.updateKeys();
+				
+				// parent.updateKeys();
+				this.updateAllKeys(parent);
 			}
 			// Case: # leaf values < ceil(pLeaf/2)
 			else if(entries.size() < leafThreshold) {
@@ -203,9 +205,12 @@ public class BPlusTree {
 						}
 					}
 					parent.updateKeys();
+					
 					// no need to update the same parent twice
 					if(!parent.equals(leftSibling.getParent())) {
-						leftSibling.getParent().updateKeys();
+						// fjeirohfeuwhfuifhiuwefhwuifheiufhwiuefhiufhuifhwifhewiufh
+						// leftSibling.getParent().updateKeys();
+						this.updateAllKeys(leftSibling.getParent());
 					}
 				} else if(rightSibling != null) {
 					// BORROW RIGHT sibling's entry
@@ -222,13 +227,18 @@ public class BPlusTree {
 						}
 					}
 					parent.updateKeys();
+					
 					// no need to update the same parent twice
 					if(!parent.equals(rightSibling.getParent())) {
-						rightSibling.getParent().updateKeys();
+						// diowejiofjwfjiowejfioejeiofjewiofjifjeiofjeiofjwiofjioew
+						//rightSibling.getParent().updateKeys();
+						this.updateAllKeys(rightSibling.getParent());
 					}
 				}
 			} else {
+				
 				parent.updateKeys();
+				//this.updateAllKeys(parent);
 			}
 			// check that # of children under parent is valid
 			int innerThreshold = (int) Math.ceil(this.pInner/2.0);
@@ -248,6 +258,7 @@ public class BPlusTree {
 						if( ((InnerNode)this.root).getChildren().size() == 1 ) {
 							this.root = leftParent;
 						}
+						// 
 					} else {
 						this.updateAllKeys(parent);
 						
@@ -350,12 +361,39 @@ public class BPlusTree {
 	
 	public void updateAllKeys(InnerNode p) {
 		if(p.equals(this.root)) {
-			p.updateKeys();
+			// p.updateKeys();
+			this.updateRoot();
 			return;
 		}
 		p.updateKeys();
 		InnerNode pParent = p.getParent();
 		updateAllKeys(pParent);
+	}
+	
+	public void updateRoot() {
+		int rootIndex = 0;
+		for(int i = 0; i < this.leafNodes.size()-1; i++) {
+			LeafNode lf = this.leafNodes.get(i); 
+			InnerNode p = lf.getParent();
+			InnerNode pNext = this.leafNodes.get(i+1).getParent();
+			if(!p.equals(pNext)) {
+				Field max = lf.getEntries().get(lf.getEntries().size()-1).getField();
+				Field r = ((InnerNode)this.root).getKeys().get(rootIndex);
+				InnerNode lChild = (InnerNode) ((InnerNode)this.root).getChildren().get(rootIndex);
+				InnerNode rChild = (InnerNode) ((InnerNode)this.root).getChildren().get(rootIndex+1);
+				
+				// only update if needed, otherwise leave as is
+				if( lChild.getKeys().size() > 0 &&  rChild.getKeys().size() > 0 ) {
+					Field lChildField = lChild.getKeys().get(lChild.getKeys().size()-1);
+					Field rChildField = rChild.getKeys().get(0);
+					
+					if(r.compare(RelationalOperator.GTE, rChildField) || r.compare(RelationalOperator.LTE, lChildField)) {
+						((InnerNode)this.root).getKeys().set(rootIndex, max);
+					}
+				}		
+				rootIndex++;
+			}
+		}
 	}
 
 	public Node getRoot() {
