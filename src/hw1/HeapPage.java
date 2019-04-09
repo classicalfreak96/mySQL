@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import hw4.Permissions;
+
 // QUESTIONS: addTuple(), deleteTuple() how to check for "structure"?
 
 public class HeapPage {
