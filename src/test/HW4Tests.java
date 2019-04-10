@@ -106,15 +106,15 @@ public class HW4Tests {
 //
 //	}
 //
-//	@Test
-//	public void testReadLocks() throws Exception {
-//		bp.getPage(0, tid, 0, Permissions.READ_ONLY);
-//		bp.getPage(1, tid, 0, Permissions.READ_ONLY);
-//		if (!bp.holdsLock(0, tid, 0) && !bp.holdsLock(1, tid, 0)) {
-//			fail("Should be able to acquire multiple read locks");
-//		}
-//		assertTrue(true);
-//	}
+	@Test
+	public void testReadLocks() throws Exception {
+		bp.getPage(0, tid, 0, Permissions.READ_ONLY);
+		bp.getPage(1, tid, 0, Permissions.READ_ONLY);
+		if (!bp.holdsLock(0, tid, 0) && !bp.holdsLock(1, tid, 0)) {
+			fail("Should be able to acquire multiple read locks");
+		}
+		assertTrue(true);
+	}
 
 	@Test
 	public void testLockUpgrade() throws Exception {
@@ -127,15 +127,15 @@ public class HW4Tests {
 		assertTrue(true);
 	}
 
-//	@Test
-//	public void testLockUpgrade2() throws Exception {
-//		bp.getPage(0, tid, 0, Permissions.READ_WRITE);
-//		bp.getPage(0, tid, 0, Permissions.READ_ONLY);
-//		if (!bp.holdsLock(0, tid, 0)) {
-//			fail("Should be able to upgrade locks");
-//		}
-//		assertTrue(true);
-//	}
+	@Test
+	public void testLockUpgrade2() throws Exception {
+		bp.getPage(0, tid, 0, Permissions.READ_WRITE);
+		bp.getPage(0, tid, 0, Permissions.READ_ONLY);
+		if (!bp.holdsLock(0, tid, 0)) {
+			fail("Should be able to upgrade locks");
+		}
+		assertTrue(true);
+	}
 
 	@Test
 	public void testFailedLockUpgrade() throws Exception {

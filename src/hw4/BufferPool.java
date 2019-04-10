@@ -66,9 +66,15 @@ public class BufferPool {
 		if (cache.containsKey(pid)) {
 //			System.out.println("contains pageID already");
 			heapPage = cache.get(pid);
-			if (this.hasWriteLock(pid)) { 			//check for existing write lock, abort if there is one. TODO: block
+			if (this.hasWriteLock(pid)) { 			//check for existing write lock 
 //				System.out.println("has write lock!");
-				this.transactionComplete(tid, false);
+				Map<Integer, Permissions> existingLocks = pageLocks.get(pid);
+				if (existingLocks.containsKey(pid)) {		//if existing lock is same as current transaction, just downgrade from write to read
+					pageLocks.get(pid).replace(pid, perm);
+				}
+				else {										//else abort. TODO: block!
+					this.transactionComplete(tid, false);
+				}
 			}
 			else {
 //				System.out.println("no write lock");
