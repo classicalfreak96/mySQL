@@ -29,9 +29,11 @@ public class BufferPool {
 	 * instead.
 	 */
 	public static final int DEFAULT_PAGES = 50;
-	private static Catalog catalog = Database.getCatalog();
-	private static ArrayList<HeapPage> cache = new ArrayList<HeapPage>();
-	private static ArrayList<Boolean> dirtyArray = new ArrayList<Boolean>();
+	private Map<Integer, HeapPage> cache = new HashMap<Integer, HeapPage>();  //Map<page ID, heapPage>
+	private Map<Integer, Boolean> isDirty = new HashMap<Integer, Boolean>();  //Map <page ID, if dirty then true, else false
+	private Map<Integer, Map<Integer, Permissions>> pageLocks = new HashMap<Integer, Map<Integer, Permissions>>(); // Map<page ID, Map<transaction ID, lock type>>
+	private Map<Integer, ArrayList<int[]>> transactionPageMap = new HashMap<Integer, ArrayList<int[]>>();      // Map<transaction ID, ArrayList<[pageID, tableID]>>/ 
+	private int maxPages;
 
 	/**
 	 * Creates a BufferPool that caches up to numPages pages.
@@ -39,7 +41,8 @@ public class BufferPool {
 	 * @param numPages maximum number of pages in this buffer pool.
 	 */
 	public BufferPool(int numPages) {
-		// your code here
+//		this.catalog  = Database.getCatalog();
+		this.maxPages = numPages;
 	}
 
 	/**
@@ -57,18 +60,54 @@ public class BufferPool {
 	 * @param perm    the requested permissions on the page
 	 */
 	public HeapPage getPage(int tid, int tableId, int pid, Permissions perm) throws Exception {
-		HeapPage heapPage = this.catalog.getDbFile(tableId).readPage(pid);
-		if (! cache.contains(heapPage)) {
-			if (cache.size() >= DEFAULT_PAGES) {
+//		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		HeapPage heapPage;
+		this.addToTransactionPageMap(tid, tableId, pid);
+		if (cache.containsKey(pid)) {
+//			System.out.println("contains pageID already");
+			heapPage = cache.get(pid);
+			if (this.hasWriteLock(pid)) { 			//check for existing write lock, abort if there is one. TODO: block
+//				System.out.println("has write lock!");
+				this.transactionComplete(tid, false);
+			}
+			else {
+//				System.out.println("no write lock");
+				if (perm.permLevel == 0) {			   //if you want to add a read lock, go ahead
+//					System.out.println("adding read lock for transaction: " + tid);
+					pageLocks.get(pid).put(tid, perm); //put tid and permissions into pageLock
+				}
+				else {								   //if you want to add a write lock, must make sure there are no other locks. 
+					Map<Integer, Permissions> existingLocks = pageLocks.get(pid);
+					if (existingLocks.isEmpty()) {
+//						System.out.println("adding write lock for transaction: " + tid);
+						pageLocks.get(pid).put(tid, perm);
+					}
+					else if (existingLocks.size() == 1 && existingLocks.containsKey(pid)) { //upgrade lock to read if its the same transaction and is the only one that exists
+//						System.out.println("upgrading read lock of transaction " + tid);
+						pageLocks.get(pid).replace(pid, perm);
+					}
+					else {
+//						System.out.println("removing transaction: " + tid);
+//						this.printPageLocks();
+						this.transactionComplete(tid, false);
+//						this.printPageLocks();
+					}
+				}
+			}
+		}
+		else {
+//			System.out.println("caching pageID for first time");
+			if (cache.size() >= this.maxPages) {
 				this.evictPage();
 			}
-			cache.add(heapPage);
-			dirtyArray.add(false);
+			heapPage = Database.getCatalog().getDbFile(tableId).readPage(pid); //read heappage from disk 
+			this.cache.put(pid, heapPage);									   //add to cache, initialize as not dirty 
+			this.isDirty.put(pid, false);
+			Map<Integer, Permissions> newPermissions = new HashMap<Integer, Permissions>(); //add permissions to current locks on page 
+			newPermissions.put(tid, perm);
+			this.pageLocks.put(pid, newPermissions);
 		}
 		return heapPage;
-		
-		//TODO: permissions?! how to implement? hw says they should be implemented at page level
-		//in the catalog. 
 	}
 
 	/**
@@ -81,12 +120,21 @@ public class BufferPool {
 	 * @param pid     the ID of the page to unlock
 	 */
 	public void releasePage(int tid, int tableId, int pid) {
-		// your code here
+		//TODO: is this similar to my removeTransactionLocks function?
 	}
 
 	/** Return true if the specified transaction has a lock on the specified page */
 	public boolean holdsLock(int tid, int tableId, int pid) {
-		// your code here
+		Map<Integer, Permissions> locks = pageLocks.get(pid);
+		if (locks == null) {
+			return false;
+		}
+		for (Map.Entry<Integer, Permissions> lock : locks.entrySet()) {
+			int transactionID = lock.getKey();
+			if (transactionID == tid) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -98,7 +146,20 @@ public class BufferPool {
 	 * @param commit a flag indicating whether we should commit or abort
 	 */
 	public void transactionComplete(int tid, boolean commit) throws IOException {
-		// your code here
+		if (commit) {
+			//TODO: release locks and flush to disk
+		}
+		else {
+			//TODO: delete all transactions related to that transaction, reload fresh copy of page from disk into cache
+			for (int[] IDs : this.transactionPageMap.get(tid)) {
+				this.removeTransactionLocks(IDs[0], tid);
+				this.cache.replace(IDs[0], Database.getCatalog().getDbFile(IDs[1]).readPage(IDs[0]));
+				this.isDirty.replace(IDs[0], false);
+				this.transactionPageMap.remove(IDs[0]);
+			}
+		}
+//		this.printTransactionPageMap();
+		
 	}
 
 	/**
@@ -131,7 +192,9 @@ public class BufferPool {
 	}
 
 	private synchronized void flushPage(int tableId, int pid) throws IOException {
-		// your code here
+		HeapPage page = this.cache.get(pid);
+		Database.getCatalog().getDbFile(tableId).writePage(page);
+		this.isDirty.replace(pid, false);
 	}
 
 	/**
@@ -139,12 +202,88 @@ public class BufferPool {
 	 * dirty pages are updated on disk.
 	 */
 	private synchronized void evictPage() throws Exception {
-		int i = 0;
-		while (dirtyArray.get(i)) {
-			i++;
+		for (Map.Entry<Integer, Boolean> entry : isDirty.entrySet()) {
+			int pageID = entry.getKey();
+			Boolean dirty = entry.getValue();
+			if (!dirty) {
+				isDirty.remove(pageID);
+				cache.remove(pageID);
+				break;
+			}
 		}
-		cache.remove(i);
-		dirtyArray.remove(i);
+	}
+	
+	//helper functions
+	
+	private boolean hasWriteLock(int pid) {
+		Map<Integer, Permissions> locks = pageLocks.get(pid);
+		if (locks == null) {
+			return false;
+		}
+		for (Map.Entry<Integer, Permissions> lock : locks.entrySet()) {
+			Permissions perm = lock.getValue();
+			if (perm.permLevel == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void addToTransactionPageMap(int transactionID, int tableID, int pageID) {
+		if (this.transactionPageMap.containsKey(transactionID)) {
+			ArrayList<int[]> IDs = transactionPageMap.get(transactionID);
+			boolean add = true;
+			for (int[] id : IDs) {
+				if (id[0] == pageID) {
+					add = false;
+					break;
+				}
+			}
+			if (add) {
+				int[] toAdd = {pageID, tableID};
+				IDs.add(toAdd);
+			}
+		}
+		else {
+			ArrayList<int[]> IDs = new ArrayList<int[]>();
+			int[] toAdd = {pageID, tableID};
+			IDs.add(toAdd);
+			this.transactionPageMap.put(transactionID, IDs);
+		}
+	}
+	
+	private void removeTransactionLocks(int pageID, int transactionID) {
+		Map<Integer, Permissions> locks = pageLocks.get(pageID);
+		for (Map.Entry<Integer, Permissions> lock : locks.entrySet()) {
+			if (transactionID == lock.getKey()) {
+				locks.remove(lock.getKey());
+				break;
+			}
+		}
+	}
+	
+	
+	//debugging
+	private void printPageLocks() {
+		System.out.println("PRINTING PAGE LOCKS");
+		for (Map.Entry<Integer, Map<Integer, Permissions>> entry : this.pageLocks.entrySet()) {
+			System.out.println("Page id: " + entry.getKey());
+			for (Map.Entry<Integer, Permissions> entry1 : entry.getValue().entrySet()) {
+				System.out.println("Transaction id: " + entry1.getKey());
+				System.out.println("Permission: " + entry1.getValue().toString());
+			}
+		}
+	}
+	
+	private void printTransactionPageMap() {
+		System.out.println("PRINTING TRANSACTRION PAGE MAPPING");
+		for (Map.Entry<Integer, ArrayList<int[]>> entry : this.transactionPageMap.entrySet()) {
+			System.out.println("Transaction id: " + entry.getKey());
+			for (int[] array : entry.getValue()) {
+				System.out.println("page ID: " + array[0]);
+				System.out.println("tableID: " + array[1]);
+			}
+		}
 	}
 
 }
