@@ -101,8 +101,8 @@ public class BufferPool {
 					}
 					else {
 						// TODO: ***************BLOCK
-//						this.handleDeadLock(tid, pid);
-						this.transactionComplete(tid, false);
+						this.handleDeadLock(tid, pid);
+//						this.transactionComplete(tid, false);
 					}
 				}
 			}
@@ -239,7 +239,6 @@ public class BufferPool {
 		}
 		// mark as dirty
 		this.isDirty.replace(pid, true);
-//		this.pageLocks.get(pid).replace(tid, value)
 		// remove tuple
 		this.cache.get(pid).deleteTuple(t);
 	}
@@ -345,27 +344,45 @@ public class BufferPool {
 	// pid: page id
 	private void handleDeadLock(int tid, int pid) {
 		Map<Integer, Permissions> existingLocks = this.pageLocks.get(pid);
-		Timer timer = new Timer();
-		BufferPool inst = this; // doing this feels off
-		System.out.println("PID: " + pid + "  TID: " + tid);
-		this.printPageLocks();
+		long start = System.currentTimeMillis();
+		boolean hasLocks = true;
+		while(System.currentTimeMillis() - start != 1000) {
+			// do nothing
+			if(existingLocks.isEmpty()) {
+				hasLocks = false;
+				break;
+			}
+		}
+		if(hasLocks) {
+			try {
+				this.transactionComplete(tid, false);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
-		timer.schedule(new TimerTask() {
-			@Override
-			  public void run() {
-				// check if page still has locks
-				if (!existingLocks.isEmpty()) {
-					// if there are still locks (page still in use), then abort
-					try {
-						System.out.println("yoooo");
-						inst.transactionComplete(tid, false);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			  }
-		}, 3000);
+// Parallel approach broken
+// 		Timer timer = new Timer(false);
+//		BufferPool inst = this; // doing this feels off
+//		Map<Integer, Map<Integer, Permissions>> pageLocksCopy = this.pageLocks;
+//		timer.schedule(new TimerTask() {
+//			@Override
+//			  public void run() {
+//				Map<Integer, Permissions> existingLocks = pageLocksCopy.get(pid);
+//				System.out.println("PID: " + pid + "  TID: " + tid);
+//				// check if page still has locks
+//				if (!existingLocks.isEmpty()) {
+//					// if there are still locks (page still in use), then abort
+//					try {
+//						inst.transactionComplete(tid, false);
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		}, 3000);
 	}
 
 }
