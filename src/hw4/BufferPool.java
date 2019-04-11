@@ -3,9 +3,11 @@ package hw4;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import hw1.Catalog;
 import hw1.Database;
 import hw1.HeapPage;
 import hw1.Tuple;
@@ -32,7 +34,7 @@ public class BufferPool {
 	private Map<Integer, HeapPage> cache = new HashMap<Integer, HeapPage>();  //Map<page ID, heapPage>
 	private Map<Integer, Boolean> isDirty = new HashMap<Integer, Boolean>();  //Map <page ID, if dirty then true, else false
 	private Map<Integer, Map<Integer, Permissions>> pageLocks = new HashMap<Integer, Map<Integer, Permissions>>(); // Map<page ID, Map<transaction ID, lock type>>
-	private Map<Integer, ArrayList<int[]>> transactionPageMap = new HashMap<Integer, ArrayList<int[]>>();      // Map<transaction ID, ArrayList<[pageID, tableID]>>/ 
+	private Map<Integer, ArrayList<int[]>> transactionPageMap = new HashMap<Integer, ArrayList<int[]>>();      // Map<transaction ID, ArrayList<[pageID, tableID]>> 
 	private int maxPages;
 
 	/**
@@ -68,11 +70,16 @@ public class BufferPool {
 			heapPage = cache.get(pid);
 			if (this.hasWriteLock(pid)) { 			//check for existing write lock 
 //				System.out.println("has write lock!");
-				Map<Integer, Permissions> existingLocks = pageLocks.get(pid);
-				if (existingLocks.containsKey(pid)) {		//if existing lock is same as current transaction, just downgrade from write to read
-					pageLocks.get(pid).replace(pid, perm);
+				Map<Integer, Permissions> existingLocks = pageLocks.get(pid); // Map<transaction ID, lock type>
+				if (existingLocks.containsKey(tid)) {		//if existing lock is same as current transaction, just downgrade from write to read
+					existingLocks.replace(pid, perm);
 				}
 				else {										//else abort. TODO: block!
+					// another transaction is using the page
+					// wait for 3-5 sec and then check if that page is still being used
+					// check if you can pass the transaction
+					// then abort
+//					this.handleDeadLock(tid, pid);
 					this.transactionComplete(tid, false);
 				}
 			}
@@ -88,15 +95,14 @@ public class BufferPool {
 //						System.out.println("adding write lock for transaction: " + tid);
 						pageLocks.get(pid).put(tid, perm);
 					}
-					else if (existingLocks.size() == 1 && existingLocks.containsKey(pid)) { //upgrade lock to read if its the same transaction and is the only one that exists
+					else if (existingLocks.size() == 1 && existingLocks.containsKey(tid)) { //upgrade lock to read if its the same transaction and is the only one that exists
 //						System.out.println("upgrading read lock of transaction " + tid);
 						pageLocks.get(pid).replace(pid, perm);
 					}
 					else {
-//						System.out.println("removing transaction: " + tid);
-//						this.printPageLocks();
+						// TODO: ***************BLOCK
+//						this.handleDeadLock(tid, pid);
 						this.transactionComplete(tid, false);
-//						this.printPageLocks();
 					}
 				}
 			}
@@ -127,6 +133,9 @@ public class BufferPool {
 	 */
 	public void releasePage(int tid, int tableId, int pid) {
 		//TODO: is this similar to my removeTransactionLocks function?
+		// remove key from pageLocks, remove key from transactionPageMap
+		this.pageLocks.get(pid).remove(tid);
+		this.transactionPageMap.remove(tid);
 	}
 
 	/** Return true if the specified transaction has a lock on the specified page */
@@ -153,9 +162,21 @@ public class BufferPool {
 	 */
 	public void transactionComplete(int tid, boolean commit) throws IOException {
 		if (commit) {
-			//TODO: release locks and flush to disk
+			// write changes to disk
+			Iterator it = this.transactionPageMap.entrySet().iterator();
+			while(it.hasNext()) {
+				Map.Entry pair = (Map.Entry)it.next();
+				// key = tid, value = List([pid, tableId])
+				for(int[] IDs : (ArrayList<int[]>)pair.getValue()) {
+					this.flushPage(IDs[1], IDs[0]);
+					// mark the page as clean
+					this.isDirty.replace(IDs[0], false);
+					// remove all locks ASSOCIATED w/ the tid
+					this.releasePage(tid, IDs[1], IDs[0]);
+				}
+			}
 		}
-		else {
+		else { // abort transaction
 			//TODO: delete all transactions related to that transaction, reload fresh copy of page from disk into cache
 			for (int[] IDs : this.transactionPageMap.get(tid)) {
 				this.removeTransactionLocks(IDs[0], tid);
@@ -180,7 +201,19 @@ public class BufferPool {
 	 * @param t       the tuple to add
 	 */
 	public void insertTuple(int tid, int tableId, Tuple t) throws Exception {
-		// your code here
+		int pid = -1;
+		for(int[] pair : this.transactionPageMap.get(tid)) {
+			if(pair[1] == tableId) {
+				pid = pair[0];
+			}
+		}
+		if(pid < 0) {
+			throw new Exception("No matching page in specified tableId");
+		}
+		// mark as dirty
+		this.isDirty.replace(pid, true);
+		// add tuple
+		this.cache.get(pid).addTuple(t);
 	}
 
 	/**
@@ -195,6 +228,20 @@ public class BufferPool {
 	 */
 	public void deleteTuple(int tid, int tableId, Tuple t) throws Exception {
 		// your code here
+		int pid = -1;
+		for(int[] pair : this.transactionPageMap.get(tid)) {
+			if(pair[1] == tableId) {
+				pid = pair[0];
+			}
+		}
+		if(pid < 0) {
+			throw new Exception("No matching page in specified tableId");
+		}
+		// mark as dirty
+		this.isDirty.replace(pid, true);
+//		this.pageLocks.get(pid).replace(tid, value)
+		// remove tuple
+		this.cache.get(pid).deleteTuple(t);
 	}
 
 	private synchronized void flushPage(int tableId, int pid) throws IOException {
@@ -214,9 +261,10 @@ public class BufferPool {
 			if (!dirty) {
 				isDirty.remove(pageID);
 				cache.remove(pageID);
-				break;
+				return;
 			}
 		}
+		throw new Exception("All pages dirty");
 	}
 	
 	//helper functions
@@ -258,8 +306,9 @@ public class BufferPool {
 		}
 	}
 	
+	// removes a specific transactionID from that page
 	private void removeTransactionLocks(int pageID, int transactionID) {
-		Map<Integer, Permissions> locks = pageLocks.get(pageID);
+		Map<Integer, Permissions> locks = pageLocks.get(pageID); // Map<transaction ID, lock type>
 		for (Map.Entry<Integer, Permissions> lock : locks.entrySet()) {
 			if (transactionID == lock.getKey()) {
 				locks.remove(lock.getKey());
@@ -290,6 +339,33 @@ public class BufferPool {
 				System.out.println("tableID: " + array[1]);
 			}
 		}
+	}
+	
+	// tid: transaction id
+	// pid: page id
+	private void handleDeadLock(int tid, int pid) {
+		Map<Integer, Permissions> existingLocks = this.pageLocks.get(pid);
+		Timer timer = new Timer();
+		BufferPool inst = this; // doing this feels off
+		System.out.println("PID: " + pid + "  TID: " + tid);
+		this.printPageLocks();
+		
+		timer.schedule(new TimerTask() {
+			@Override
+			  public void run() {
+				// check if page still has locks
+				if (!existingLocks.isEmpty()) {
+					// if there are still locks (page still in use), then abort
+					try {
+						System.out.println("yoooo");
+						inst.transactionComplete(tid, false);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			  }
+		}, 3000);
 	}
 
 }
