@@ -9,3 +9,5 @@ During this class, we studied, wrote, and implemented the code behind a working 
 - HW3: Implemented B+ trees for faster catalog searching, integrated with rest of DBMS
 - HW4: Implemented strict two phase locking that can be used with transactions, so that there are no data conflicts.
 
+The last and final portion of this project was to implement a noSQL database. This is in a separate repository as its code is completely unrelated to that of an SQL database.
+
